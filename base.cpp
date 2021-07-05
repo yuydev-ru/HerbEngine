@@ -3,6 +3,8 @@
 #include "base.h"
 #include "interface.h"
 
+#include <iostream>
+
 void
 loadConfig(const std::string& configPath, Config *config)
 {
@@ -58,6 +60,13 @@ main()
             {
                 window.close();
                 state.running = false;
+            }
+
+            if (event.type == sf::Event::Resized)
+            {
+                sf::Vector2f visibleArea = { (float) event.size.width
+                                           , (float) event.size.height };
+                window.setView(sf::View(visibleArea * 0.5f, visibleArea));
             }
         }
 
