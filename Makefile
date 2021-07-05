@@ -18,7 +18,7 @@ TARGET=$(BUILD_DIR)/engine.o
 
 all: $(TARGET)
 $(TARGET): base.h base.cpp interface.h
-	$(CC) $(CFLAGS) -c base.cpp -o $(BUILD_DIR)/engine.o
+	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c base.cpp -o $(BUILD_DIR)/engine.o
 
 
 clean:
