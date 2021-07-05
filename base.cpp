@@ -1,3 +1,5 @@
+#include <SFML/Graphics.hpp>
+
 #include "base.h"
 #include "interface.h"
 
@@ -36,14 +38,32 @@ main()
     Config config;
     loadConfig("data/config", &config);
 
-    Storage storage;
+    sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
+
     GameState state {};
+    state.running = true;
+    state.window = &window;
+
+    Storage storage;
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
     while (state.running)
     {
+        sf::Event event {};
+
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+                state.running = false;
+            }
+        }
+
+        window.clear();
         updateState(&state, &storage);
+        window.display();
     }
 
     return 0;

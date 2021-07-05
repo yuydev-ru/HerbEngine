@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
+
 #include <vector>
 #include <queue>
 #include <set>
@@ -26,6 +28,8 @@ struct Component {};
 struct GameState
 {
     bool running = true;
+    sf::RenderWindow *window;
+    Entity currentCamera;
 };
 
 struct Storage
