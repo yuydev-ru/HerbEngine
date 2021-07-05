@@ -60,7 +60,7 @@ struct Storage
         if (this->freeIds.empty())
         {
             idx = this->lastEntityId++;
-            this->entitySignatures.emplace_back(idx);
+            this->entitySignatures.emplace_back(0);
 
             for (auto &componentPair : this->entities)
             {
