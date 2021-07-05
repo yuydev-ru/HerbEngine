@@ -2,6 +2,11 @@
 
 CC=g++
 CFLAGS=-Wall -Wpedantic -ggdb -std=c++11
+ifneq ($(OS), Windows_NT)
+	ifeq ($(shell uname), Darwin)
+		override CFLAGS += -arch x86_64
+	endif
+endif
 PREFIX ?= .
 
 INCLUDE_DIR = $(PREFIX)/include
