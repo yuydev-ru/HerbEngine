@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <nlohmann/json.hpp>
+
 #include <vector>
 #include <queue>
 #include <set>
@@ -12,18 +14,21 @@
 #define TYPE(x) std::type_index(typeid(x))
 #define MAX_COMPONENTS 32
 
+using json = nlohmann::json;
+
 struct Storage;
 struct GameState;
+struct Component {};
+
 typedef unsigned int Entity;
 typedef void (*System)(GameState *, Storage *, Entity);
+typedef Component *(*Deserializer)(json&);
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
 struct Config
 {
     std::string defaultScene;
 };
-
-struct Component {};
 
 struct GameState
 {
@@ -34,8 +39,11 @@ struct GameState
 
 struct Storage
 {
-    std::unordered_map<std::type_index, std::vector<Component *>> entities;
     std::unordered_map<std::type_index, int> componentTypes;
+    std::unordered_map<std::string, std::type_index> typeNames;
+    std::unordered_map<std::string, Deserializer> deserializers;
+
+    std::unordered_map<std::type_index, std::vector<Component *>> entities;
     std::unordered_map<System, Signature> systemSignature;
     std::vector<System> systemsArray;
     std::vector<Signature> entitySignatures;
@@ -104,10 +112,14 @@ struct Storage
     }
 
     template <class T> void
-    registerComponent()
+    registerComponent(const std::string &name)
     {
         // TODO(guschin): Добавить логгирование.
         if (this->componentTypes.find(TYPE(T)) != this->componentTypes.end()) return;
+
+//        this->typeNames.insert(std::make_pair(name, TYPE(T)));
+        this->typeNames.insert(std::make_pair(name, TYPE(T)));
+        this->deserializers.insert(std::make_pair(name, T::deserialize));
 
         this->componentTypes[TYPE(T)] = this->componentsCount++;
         std::vector<Component *> tmp;
