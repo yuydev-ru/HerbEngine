@@ -96,31 +96,32 @@ main()
                     } break;
                 }
             }
+
             if (event.type == sf::Event::KeyReleased)
             {
                 switch (event.key.code)
                 {
                     case sf::Keyboard::Key::W:
                     {
-                        state.axes["vertical"] = 0;
+                        state.axes["vertical"] =
+                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) ? -1 : 0;
                     } break;
                     case sf::Keyboard::Key::S:
                     {
-                        state.axes["vertical"] = 0;
+                        state.axes["vertical"] =
+                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) ? 1 : 0;
                     } break;
                     case sf::Keyboard::Key::D:
                     {
-                        state.axes["horizontal"] = 0;
+                        state.axes["horizontal"] =
+                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) ? -1 : 0;
                     } break;
                     case sf::Keyboard::Key::A:
                     {
-                        state.axes["horizontal"] = 0;
+                        state.axes["horizontal"] =
+                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) ? 1 : 0;
                     } break;
-                    
-                    default:
-                    {
-
-                    } break;
+                    default: {} break;
                 }
             }
         }
