@@ -68,6 +68,61 @@ main()
                                            , (float) event.size.height };
                 window.setView(sf::View(visibleArea * 0.5f, visibleArea));
             }
+
+            if (event.type == sf::Event::KeyPressed)
+            {
+                switch (event.key.code)
+                {
+                    case sf::Keyboard::Key::W:
+                    {
+                        state.axes["vertical"] = 1.f;
+                    } break;
+                    case sf::Keyboard::Key::S:
+                    {
+                        state.axes["vertical"] = -1.f;
+                    } break;
+                    case sf::Keyboard::Key::D:
+                    {
+                        state.axes["horizontal"] = 1.f;
+                    } break;
+                    case sf::Keyboard::Key::A:
+                    {
+                        state.axes["horizontal"] = -1.f;
+                    } break;
+                    
+                    default:
+                    {
+
+                    } break;
+                }
+            }
+            if (event.type == sf::Event::KeyReleased)
+            {
+                switch (event.key.code)
+                {
+                    case sf::Keyboard::Key::W:
+                    {
+                        state.axes["vertical"] = 0;
+                    } break;
+                    case sf::Keyboard::Key::S:
+                    {
+                        state.axes["vertical"] = 0;
+                    } break;
+                    case sf::Keyboard::Key::D:
+                    {
+                        state.axes["horizontal"] = 0;
+                    } break;
+                    case sf::Keyboard::Key::A:
+                    {
+                        state.axes["horizontal"] = 0;
+                    } break;
+                    
+                    default:
+                    {
+
+                    } break;
+                }
+            }
         }
 
         window.clear();
