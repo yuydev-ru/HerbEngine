@@ -30,6 +30,12 @@ struct GameState
     bool running = true;
     sf::RenderWindow *window;
     Entity currentCamera;
+    std::unordered_map<std::string, float> axes = {{"horizontal", 0},
+                                              {"vertical", 0}};
+    std::unordered_map<std::string, sf::Keyboard::Key> axisData = {{"up", sf::Keyboard::Key::W},
+                                                                   {"down", sf::Keyboard::Key::S},
+                                                                   {"left", sf::Keyboard::Key::A},
+                                                                   {"right", sf::Keyboard::Key::D}};
 };
 
 struct Storage
