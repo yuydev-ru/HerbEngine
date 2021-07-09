@@ -19,25 +19,6 @@ typedef unsigned int Entity;
 typedef void (*System)(GameState *, Storage *, Entity);
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
-struct Config
-{
-    std::string defaultScene;
-    std::unordered_map<std::string, std::string> oppositeKeys = {
-        {"up", "down"},
-        {"down", "up"},
-        {"right", "left"},
-        {"left", "right"},
-    };
-    std::unordered_map<std::string, sf::Keyboard::Key> keys = {
-            {"up", sf::Keyboard::Key::W},
-            {"down", sf::Keyboard::Key::S},
-            {"left", sf::Keyboard::Key::A},
-            {"right", sf::Keyboard::Key::D},
-    };
-};
-
-struct Component {};
-
 struct KeyData
 {
     std::string axis;
@@ -54,23 +35,23 @@ struct KeyData
     KeyData () = default;
 };
 
+struct Config
+{
+    std::string defaultScene;
+    std::unordered_map<std::string, std::string> oppositeKeys;
+    std::unordered_map<std::string, sf::Keyboard::Key> keys;
+    std::map<sf::Keyboard::Key, KeyData> axisData;
+};
+
+struct Component {};
+
 struct GameState
 {
     bool running = true;
     sf::RenderWindow *window;
     Entity currentCamera;
-    std::unordered_map<std::string, float> axes = {{"horizontal", 0},
-                                                   {"vertical", 0}};
-    // TODO(granat): изменить sf::Keyboard::Key::btn на config.keys[".."]
-    std::map<sf::Keyboard::Key, KeyData> axisData = {
-        {sf::Keyboard::Key::W, KeyData("vertical", "hold", 1)},
-        {sf::Keyboard::Key::S, KeyData("vertical", "hold", -1)},
-        {sf::Keyboard::Key::D, KeyData("horizontal", "hold", 1)},
-        {sf::Keyboard::Key::A, KeyData("horizontal", "hold", -1)},
-        {sf::Keyboard::Key::E, KeyData("", "push", 1)},
-        {sf::Keyboard::Key::F, KeyData("", "push", 1)},
-        {sf::Keyboard::Key::Space, KeyData("", "push", 0)},
-    };
+    std::unordered_map<std::string, float> axes = { {"horizontal", 0}
+                                                  , {"vertical", 0} };
 };
 
 struct Storage

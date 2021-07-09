@@ -9,6 +9,28 @@ void
 loadConfig(const std::string& configPath, Config *config)
 {
     config->defaultScene = "MainMenu";
+    config->oppositeKeys = {
+            {"up", "down"},
+            {"down", "up"},
+            {"right", "left"},
+            {"left", "right"},
+    };
+    config->keys = {
+            {"up", sf::Keyboard::Key::W},
+            {"down", sf::Keyboard::Key::S},
+            {"left", sf::Keyboard::Key::A},
+            {"right", sf::Keyboard::Key::D},
+    };
+    // TODO(granat): изменить sf::Keyboard::Key::btn на config.keys[".."]
+    config->axisData = {
+            {sf::Keyboard::Key::W, KeyData("vertical", "hold", 1)},
+            {sf::Keyboard::Key::S, KeyData("vertical", "hold", -1)},
+            {sf::Keyboard::Key::D, KeyData("horizontal", "hold", 1)},
+            {sf::Keyboard::Key::A, KeyData("horizontal", "hold", -1)},
+            {sf::Keyboard::Key::E, KeyData("", "push", 1)},
+            {sf::Keyboard::Key::F, KeyData("", "push", 1)},
+            {sf::Keyboard::Key::Space, KeyData("", "push", 0)},
+    };
 }
 
 void
@@ -71,9 +93,9 @@ main()
                 window.setView(sf::View(visibleArea * 0.5f, visibleArea));
             }
 
-            if (event.type == sf::Event::KeyPressed && state.axisData.count(event.key.code))
+            if (event.type == sf::Event::KeyPressed && config.axisData.count(event.key.code))
             {
-                KeyData pressedKeyData = state.axisData[event.key.code];
+                KeyData pressedKeyData = config.axisData[event.key.code];
                 if (pressedKeyData.axisType == "push")
                 {
                     if (isPushed)
@@ -87,34 +109,35 @@ main()
                         std::cout << "E";
                     }
                 }
-                else
+                else if (pressedKeyData.axisType == "hold")
                 {
                     state.axes[pressedKeyData.axis] = pressedKeyData.value;
                 }
             }
 
-            if (event.type == sf::Event::KeyReleased && state.axisData.count(event.key.code))
+            if (event.type == sf::Event::KeyReleased && config.axisData.count(event.key.code))
             {
                 sf::Keyboard::Key oppositeKey;
                 for (const auto& it : config.keys)
                 {
                     if (it.second == event.key.code)
                     {
-                        oppositeKey =
-                                config.keys[config.oppositeKeys[it.first]];
+                        oppositeKey = config.keys[config.oppositeKeys[it.first]];
                     }
                 }
 
-                KeyData pressedKeyData = state.axisData[event.key.code];
-                KeyData oppositeKeyData = state.axisData[oppositeKey];
+                KeyData pressedKeyData = config.axisData[event.key.code];
+                KeyData oppositeKeyData = config.axisData[oppositeKey];
 
                 if (pressedKeyData.axisType == "push")
                 {
                     isPushed = false;
                 }
-
-                state.axes[pressedKeyData.axis] =
-                    (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
+                else if (pressedKeyData.axisType == "hold")
+                {
+                    state.axes[pressedKeyData.axis] =
+                        (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
+                }
             }
         }
 
