@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <utility>
 #include <vector>
 #include <queue>
 #include <set>
@@ -21,9 +22,37 @@ typedef std::bitset<MAX_COMPONENTS> Signature;
 struct Config
 {
     std::string defaultScene;
+    std::unordered_map<std::string, std::string> oppositeKeys = {
+        {"up", "down"},
+        {"down", "up"},
+        {"right", "left"},
+        {"left", "right"},
+    };
+    std::unordered_map<std::string, sf::Keyboard::Key> keys = {
+            {"up", sf::Keyboard::Key::W},
+            {"down", sf::Keyboard::Key::S},
+            {"left", sf::Keyboard::Key::A},
+            {"right", sf::Keyboard::Key::D},
+    };
 };
 
 struct Component {};
+
+struct KeyData
+{
+    std::string axis;
+    std::string axisType;
+    float value = 0;
+
+    KeyData (std::string axis, std::string axisType, float value)
+    {
+        this->axis = std::move(axis);
+        this->axisType = std::move(axisType);
+        this->value = value;
+    }
+
+    KeyData () = default;
+};
 
 struct GameState
 {
@@ -31,11 +60,17 @@ struct GameState
     sf::RenderWindow *window;
     Entity currentCamera;
     std::unordered_map<std::string, float> axes = {{"horizontal", 0},
-                                              {"vertical", 0}};
-    std::unordered_map<std::string, sf::Keyboard::Key> axisData = {{"up", sf::Keyboard::Key::W},
-                                                                   {"down", sf::Keyboard::Key::S},
-                                                                   {"left", sf::Keyboard::Key::A},
-                                                                   {"right", sf::Keyboard::Key::D}};
+                                                   {"vertical", 0}};
+    // TODO(granat): изменить sf::Keyboard::Key::btn на config.keys[".."]
+    std::map<sf::Keyboard::Key, KeyData> axisData = {
+        {sf::Keyboard::Key::W, KeyData("vertical", "hold", 1)},
+        {sf::Keyboard::Key::S, KeyData("vertical", "hold", -1)},
+        {sf::Keyboard::Key::D, KeyData("horizontal", "hold", 1)},
+        {sf::Keyboard::Key::A, KeyData("horizontal", "hold", -1)},
+        {sf::Keyboard::Key::E, KeyData("", "push", 1)},
+        {sf::Keyboard::Key::F, KeyData("", "push", 1)},
+        {sf::Keyboard::Key::Space, KeyData("", "push", 0)},
+    };
 };
 
 struct Storage

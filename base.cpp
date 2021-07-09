@@ -69,60 +69,27 @@ main()
                 window.setView(sf::View(visibleArea * 0.5f, visibleArea));
             }
 
-            if (event.type == sf::Event::KeyPressed)
+            if (event.type == sf::Event::KeyPressed && state.axisData.count(event.key.code))
             {
-                switch (event.key.code)
-                {
-                    case sf::Keyboard::Key::W:
-                    {
-                        state.axes["vertical"] = 1.f;
-                    } break;
-                    case sf::Keyboard::Key::S:
-                    {
-                        state.axes["vertical"] = -1.f;
-                    } break;
-                    case sf::Keyboard::Key::D:
-                    {
-                        state.axes["horizontal"] = 1.f;
-                    } break;
-                    case sf::Keyboard::Key::A:
-                    {
-                        state.axes["horizontal"] = -1.f;
-                    } break;
-                    
-                    default:
-                    {
-
-                    } break;
-                }
+                KeyData pressedKeyData = state.axisData[event.key.code];
+                state.axes[pressedKeyData.axis] = pressedKeyData.value;
             }
 
-            if (event.type == sf::Event::KeyReleased)
+            if (event.type == sf::Event::KeyReleased && state.axisData.count(event.key.code))
             {
-                switch (event.key.code)
-                {
-                    case sf::Keyboard::Key::W:
-                    {
-                        state.axes["vertical"] =
-                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) ? -1 : 0;
-                    } break;
-                    case sf::Keyboard::Key::S:
-                    {
-                        state.axes["vertical"] =
-                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) ? 1 : 0;
-                    } break;
-                    case sf::Keyboard::Key::D:
-                    {
-                        state.axes["horizontal"] =
-                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) ? -1 : 0;
-                    } break;
-                    case sf::Keyboard::Key::A:
-                    {
-                        state.axes["horizontal"] =
-                            (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) ? 1 : 0;
-                    } break;
-                    default: {} break;
+                sf::Keyboard::Key oppositeKey;
+                for (const auto& it : config.keys) {
+                    if (it.second == event.key.code) {
+                        oppositeKey =
+                                config.keys[config.oppositeKeys[it.first]];
+                    }
                 }
+
+                KeyData pressedKeyData = state.axisData[event.key.code];
+                KeyData oppositeKeyData = state.axisData[oppositeKey];
+
+                state.axes[pressedKeyData.axis] =
+                    (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
             }
         }
 
