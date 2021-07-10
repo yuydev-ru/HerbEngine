@@ -16,15 +16,15 @@ loadConfig(const std::string& configPath, Config *config)
     config->keys = { {"up", sf::Keyboard::Key::W}
                    , {"down", sf::Keyboard::Key::S}
                    , {"left", sf::Keyboard::Key::A}
-                   , {"right", sf::Keyboard::Key::D} };
-    // TODO(granat): изменить sf::Keyboard::Key::btn на config.keys[".."]
-    config->axisData = { {sf::Keyboard::Key::W, KeyData("vertical", "hold", 1)}
-                       , {sf::Keyboard::Key::S, KeyData("vertical", "hold", -1)}
-                       , {sf::Keyboard::Key::D, KeyData("horizontal", "hold", 1)}
-                       , {sf::Keyboard::Key::A, KeyData("horizontal", "hold", -1)}
-                       , {sf::Keyboard::Key::E, KeyData("", "push", 1)}
-                       , {sf::Keyboard::Key::F, KeyData("", "push", 1)}
-                       , {sf::Keyboard::Key::Space, KeyData("", "push", 0)} };
+                   , {"right", sf::Keyboard::Key::D}
+                   , {"interact", sf::Keyboard::Key::E}
+                   , {"jump", sf::Keyboard::Key::Space} };
+    config->axisData = { {config->keys["up"], KeyData("vertical", "hold", 1)}
+                       , {config->keys["down"], KeyData("vertical", "hold", -1)}
+                       , {config->keys["right"], KeyData("horizontal", "hold", 1)}
+                       , {config->keys["left"], KeyData("horizontal", "hold", -1)}
+                       , {config->keys["interact"], KeyData("", "push", 1)}
+                       , {config->keys["jump"], KeyData("", "push", 0)} };
 }
 
 void
