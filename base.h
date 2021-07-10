@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <utility>
 #include <vector>
 #include <queue>
 #include <set>
@@ -18,9 +19,28 @@ typedef unsigned int Entity;
 typedef void (*System)(GameState *, Storage *, Entity);
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
+struct KeyData
+{
+    std::string axis;
+    std::string axisType;
+    float value = 0;
+
+    KeyData (std::string axis, std::string axisType, float value)
+    {
+        this->axis = std::move(axis);
+        this->axisType = std::move(axisType);
+        this->value = value;
+    }
+
+    KeyData () = default;
+};
+
 struct Config
 {
     std::string defaultScene;
+    std::unordered_map<std::string, std::string> oppositeKeys;
+    std::unordered_map<std::string, sf::Keyboard::Key> keys;
+    std::map<sf::Keyboard::Key, KeyData> axisData;
 };
 
 struct Component {};
@@ -30,6 +50,8 @@ struct GameState
     bool running = true;
     sf::RenderWindow *window;
     Entity currentCamera;
+    std::unordered_map<std::string, float> axes;
+    std::map<sf::Keyboard::Key, bool> pushedKeys;
 };
 
 struct Storage

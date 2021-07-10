@@ -6,9 +6,27 @@
 #include <iostream>
 
 void
-loadConfig(const std::string& configPath, Config *config)
+loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
     config->defaultScene = "MainMenu";
+    config->oppositeKeys = { {"up", "down"}
+                           , {"down", "up"}
+                           , {"right", "left"}
+                           , {"left", "right"} };
+    config->keys = { {"up", sf::Keyboard::Key::W}
+                   , {"down", sf::Keyboard::Key::S}
+                   , {"left", sf::Keyboard::Key::A}
+                   , {"right", sf::Keyboard::Key::D}
+                   , {"interact", sf::Keyboard::Key::E}
+                   , {"jump", sf::Keyboard::Key::Space} };
+    config->axisData = { {config->keys["up"], KeyData("vertical", "hold", 1)}
+                       , {config->keys["down"], KeyData("vertical", "hold", -1)}
+                       , {config->keys["right"], KeyData("horizontal", "hold", 1)}
+                       , {config->keys["left"], KeyData("horizontal", "hold", -1)}
+                       , {config->keys["interact"], KeyData("", "push", 1)}
+                       , {config->keys["jump"], KeyData("", "push", 0)} };
+    state->axes = { {"vertical", 0}
+                  , {"horizontal", 0} };
 }
 
 void
@@ -37,14 +55,14 @@ updateState(GameState *state, Storage *storage)
 int
 main()
 {
-    Config config;
-    loadConfig("data/config", &config);
-
     sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
 
     GameState state {};
     state.running = true;
     state.window = &window;
+
+    Config config;
+    loadConfig(&state, "data/config", &config);
 
     Storage storage;
     initializeEngine(&state, &storage);
@@ -56,6 +74,7 @@ main()
 
         while (window.pollEvent(event))
         {
+
             if (event.type == sf::Event::Closed)
             {
                 window.close();
@@ -67,6 +86,60 @@ main()
                 sf::Vector2f visibleArea = { (float) event.size.width
                                            , (float) event.size.height };
                 window.setView(sf::View(visibleArea * 0.5f, visibleArea));
+            }
+
+            if (event.type == sf::Event::KeyPressed && config.axisData.count(event.key.code))
+            {
+                KeyData pressedKeyData = config.axisData[event.key.code];
+                if (pressedKeyData.axisType == "push")
+                {
+                    if (state.pushedKeys[event.key.code])
+                    {
+                        pressedKeyData.value = 0;
+                    }
+                    else
+                    {
+                        state.pushedKeys[event.key.code] = true;
+                        pressedKeyData.value = 1;
+
+                        for (const auto& it : config.keys)
+                        {
+                            if (it.second == event.key.code)
+                            {
+                                std::cout << it.first << '\n';
+                            }
+                        }
+                    }
+                }
+                else if (pressedKeyData.axisType == "hold")
+                {
+                    state.axes[pressedKeyData.axis] = pressedKeyData.value;
+                }
+            }
+
+            if (event.type == sf::Event::KeyReleased && config.axisData.count(event.key.code))
+            {
+                sf::Keyboard::Key oppositeKey;
+                for (const auto& it : config.keys)
+                {
+                    if (it.second == event.key.code)
+                    {
+                        oppositeKey = config.keys[config.oppositeKeys[it.first]];
+                    }
+                }
+
+                KeyData pressedKeyData = config.axisData[event.key.code];
+                KeyData oppositeKeyData = config.axisData[oppositeKey];
+
+                if (pressedKeyData.axisType == "push")
+                {
+                    state.pushedKeys[event.key.code] = false;
+                }
+                else if (pressedKeyData.axisType == "hold")
+                {
+                    state.axes[pressedKeyData.axis] =
+                        (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
+                }
             }
         }
 
