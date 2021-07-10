@@ -6,7 +6,7 @@
 #include <iostream>
 
 void
-loadConfig(const std::string& configPath, Config *config)
+loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
     config->defaultScene = "MainMenu";
     config->oppositeKeys = { {"up", "down"}
@@ -25,6 +25,8 @@ loadConfig(const std::string& configPath, Config *config)
                        , {config->keys["left"], KeyData("horizontal", "hold", -1)}
                        , {config->keys["interact"], KeyData("", "push", 1)}
                        , {config->keys["jump"], KeyData("", "push", 0)} };
+    state->axes = { {"vertical", 0}
+                  , {"horizontal", 0} };
 }
 
 void
@@ -53,19 +55,19 @@ updateState(GameState *state, Storage *storage)
 int
 main()
 {
-    Config config;
-    loadConfig("data/config", &config);
-
     sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
 
     GameState state {};
     state.running = true;
     state.window = &window;
-    bool isPushed = false;
+
+    Config config;
+    loadConfig(&state, "data/config", &config);
 
     Storage storage;
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
+    bool isPushed = false;
 
     while (state.running)
     {

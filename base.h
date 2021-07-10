@@ -50,8 +50,7 @@ struct GameState
     bool running = true;
     sf::RenderWindow *window;
     Entity currentCamera;
-    std::unordered_map<std::string, float> axes = { {"horizontal", 0}
-                                                  , {"vertical", 0} };
+    std::unordered_map<std::string, float> axes;
 };
 
 struct Storage
