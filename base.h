@@ -51,6 +51,7 @@ struct GameState
     sf::RenderWindow *window;
     Entity currentCamera;
     std::unordered_map<std::string, float> axes;
+    std::map<sf::Keyboard::Key, bool> pushedKeys;
 };
 
 struct Storage

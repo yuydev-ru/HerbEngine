@@ -67,7 +67,6 @@ main()
     Storage storage;
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
-    bool isPushed = false;
 
     while (state.running)
     {
@@ -94,15 +93,22 @@ main()
                 KeyData pressedKeyData = config.axisData[event.key.code];
                 if (pressedKeyData.axisType == "push")
                 {
-                    if (isPushed)
+                    if (state.pushedKeys[event.key.code])
                     {
                         pressedKeyData.value = 0;
                     }
                     else
                     {
-                        isPushed = true;
+                        state.pushedKeys[event.key.code] = true;
                         pressedKeyData.value = 1;
-                        std::cout << "E";
+
+                        for (const auto& it : config.keys)
+                        {
+                            if (it.second == event.key.code)
+                            {
+                                std::cout << it.first << '\n';
+                            }
+                        }
                     }
                 }
                 else if (pressedKeyData.axisType == "hold")
@@ -127,7 +133,7 @@ main()
 
                 if (pressedKeyData.axisType == "push")
                 {
-                    isPushed = false;
+                    state.pushedKeys[event.key.code] = false;
                 }
                 else if (pressedKeyData.axisType == "hold")
                 {
