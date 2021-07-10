@@ -9,28 +9,22 @@ void
 loadConfig(const std::string& configPath, Config *config)
 {
     config->defaultScene = "MainMenu";
-    config->oppositeKeys = {
-            {"up", "down"},
-            {"down", "up"},
-            {"right", "left"},
-            {"left", "right"},
-    };
-    config->keys = {
-            {"up", sf::Keyboard::Key::W},
-            {"down", sf::Keyboard::Key::S},
-            {"left", sf::Keyboard::Key::A},
-            {"right", sf::Keyboard::Key::D},
-    };
+    config->oppositeKeys = { {"up", "down"}
+                           , {"down", "up"}
+                           , {"right", "left"}
+                           , {"left", "right"} };
+    config->keys = { {"up", sf::Keyboard::Key::W}
+                   , {"down", sf::Keyboard::Key::S}
+                   , {"left", sf::Keyboard::Key::A}
+                   , {"right", sf::Keyboard::Key::D} };
     // TODO(granat): изменить sf::Keyboard::Key::btn на config.keys[".."]
-    config->axisData = {
-            {sf::Keyboard::Key::W, KeyData("vertical", "hold", 1)},
-            {sf::Keyboard::Key::S, KeyData("vertical", "hold", -1)},
-            {sf::Keyboard::Key::D, KeyData("horizontal", "hold", 1)},
-            {sf::Keyboard::Key::A, KeyData("horizontal", "hold", -1)},
-            {sf::Keyboard::Key::E, KeyData("", "push", 1)},
-            {sf::Keyboard::Key::F, KeyData("", "push", 1)},
-            {sf::Keyboard::Key::Space, KeyData("", "push", 0)},
-    };
+    config->axisData = { {sf::Keyboard::Key::W, KeyData("vertical", "hold", 1)}
+                       , {sf::Keyboard::Key::S, KeyData("vertical", "hold", -1)}
+                       , {sf::Keyboard::Key::D, KeyData("horizontal", "hold", 1)}
+                       , {sf::Keyboard::Key::A, KeyData("horizontal", "hold", -1)}
+                       , {sf::Keyboard::Key::E, KeyData("", "push", 1)}
+                       , {sf::Keyboard::Key::F, KeyData("", "push", 1)}
+                       , {sf::Keyboard::Key::Space, KeyData("", "push", 0)} };
 }
 
 void
