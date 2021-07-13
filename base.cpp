@@ -27,6 +27,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
                        , {config->keys["jump"], KeyData("", "push", 0)} };
     state->axes = { {"vertical", 0}
                   , {"horizontal", 0} };
+    config->logLevel = logger::INFO;
 }
 
 void
@@ -65,6 +66,14 @@ main()
     loadConfig(&state, "data/config", &config);
 
     Storage storage;
+
+    logger::Logger logger(config.logLevel);
+    logger::ConsoleLogger consoleLogger;
+    logger.addDestination(&consoleLogger);
+
+    storage.logger = &logger;
+    state.logger = &logger;
+
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
