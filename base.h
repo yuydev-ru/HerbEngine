@@ -56,7 +56,7 @@ struct GameState
     Entity currentCamera;
     std::unordered_map<std::string, float> axes;
     std::map<sf::Keyboard::Key, bool> pushedKeys;
-    logger::Logger logger;
+    logger::Logger* logger;
 };
 
 struct Storage
@@ -70,8 +70,7 @@ struct Storage
     Entity lastEntityId = 0;
     std::queue<Entity> freeIds;
     std::set<Entity> usedIds;
-    logger::Logger logger;
-    logger::ConsoleLogger consoleLogger;
+    logger::Logger* logger;
     int componentsCount = 0;
 
     void
@@ -102,7 +101,7 @@ struct Storage
             this->entitySignatures[idx] = 0;
         }
         this->usedIds.insert(idx);
-        logger.info("Entity " + std::to_string(idx) + " successfully created.");
+        logger->info("Entity " + std::to_string(idx) + " successfully created.");
         return idx;
     }
 
@@ -117,7 +116,7 @@ struct Storage
                 componentPair.second[eid] = nullptr;
             }
         }
-        logger.info("Entity " + std::to_string(eid) + " successfully destroyed.");
+        logger->info("Entity " + std::to_string(eid) + " successfully destroyed.");
         this->freeIds.push(eid);
     }
 
@@ -138,10 +137,10 @@ struct Storage
         std::string componentName = TYPE(T).name();
         if (this->componentTypes.find(TYPE(T)) != this->componentTypes.end())
         {
-            logger.warning("Component " + componentName + " is already registered.");
+            logger->warning("Component " + componentName + " is already registered.");
             return;
         }
-        logger.info("Component " + componentName + " is registered with Component ID " +
+        logger->info("Component " + componentName + " is registered with Component ID " +
             std::to_string(this->componentsCount) + ".");
         this->componentTypes[TYPE(T)] = this->componentsCount++;
         std::vector<Component *> tmp;
@@ -155,13 +154,13 @@ struct Storage
         std::string entityID = std::to_string(eid);
         if (this->componentTypes.find(TYPE(T)) == this->componentTypes.end())
         {
-            logger.warning("Unknown component " + componentName
+            logger->warning("Unknown component " + componentName
                 + " found while adding a new component.");
             return nullptr;
         }
         if (this->usedIds.find(eid) == this->usedIds.end())
         {
-            logger.warning("Unknown Entity " + entityID
+            logger->warning("Unknown Entity " + entityID
                 + " found while adding a new component.");
             return nullptr;
         }
@@ -171,7 +170,7 @@ struct Storage
         this->entitySignatures[eid].set(this->componentTypes[TYPE(T)]);
 
 
-        logger.info("Component " + componentName
+        logger->info("Component " + componentName
             + " added to Entity " + entityID + ".");
         return obj;
     }
@@ -183,13 +182,13 @@ struct Storage
         std::string entityID = std::to_string(eid);
         if (this->componentTypes.find(TYPE(T)) == this->componentTypes.end())
         {
-            logger.warning("No component " + componentName
+            logger->warning("No component " + componentName
                 + " found for Entity " + entityID + ".");
             return nullptr;
         }
         if (this->usedIds.find(eid) == this->usedIds.end())
         {
-            logger.warning("Unknown Entity " + entityID
+            logger->warning("Unknown Entity " + entityID
                 + " found while adding a new component.");
             return nullptr;
         }

@@ -66,8 +66,14 @@ main()
     loadConfig(&state, "data/config", &config);
 
     Storage storage;
-    storage.logger = logger::Logger(config.logLevel);
-    storage.logger.addDestination(&storage.consoleLogger);
+
+    logger::Logger logger(config.logLevel);
+    logger::ConsoleLogger consoleLogger;
+    logger.addDestination(&consoleLogger);
+
+    storage.logger = &logger;
+    state.logger = &logger;
+
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
