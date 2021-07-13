@@ -6,24 +6,27 @@
 class Button
 {
 public:
-    Button (sf::Vector2f pos, const std::unordered_map<std::string, bool>& imageStates, const std::string& text,
-            const std::string& fontPath, sf::Color color, float textSize)
+    Button(const sf::Vector2f& pos, const std::unordered_map<std::string, std::string>& imageStates,
+           const std::string text, const std::string fontPath, const sf::Color fontColor, float textSize)
     {
-        this->normalBtn.loadFromFile("assets/button/normal.png");
-        this->hoveredBtn.loadFromFile("assets/button/hovered.png");
-        this->clickedBtn.loadFromFile("assets/button/clicked.png");
+        this->normalBtn.loadFromFile(imageStates.at("normal"));
+        this->hoveredBtn.loadFromFile(imageStates.at("hovered"));
+        this->clickedBtn.loadFromFile(imageStates.at("clicked"));
 
         this->pos = pos;
         this->text = text;
         this->fontPath = fontPath;
-        this->color = color;
+        this->fontColor = fontColor;
         this->textSize = textSize;
         this->imageStates = imageStates;
+
+        this->states = { {"after_click", false}
+                       , {"hovered", false}
+                       , {"clicked", false} };
     }
 
-    void DrawSprites (sf::RenderWindow& window);
-    void isHovered (sf::RenderWindow& window, sf::Sprite sprite);
-    void isClicked (sf::RenderWindow& window, sf::Sprite sprite);
+    void drawButton(sf::RenderWindow& window);
+    void updateButton(sf::RenderWindow& window, sf::Event&);
 
 private:
     sf::Texture normalBtn, hoveredBtn, clickedBtn;
@@ -31,50 +34,69 @@ private:
     sf::Vector2f pos;
     std::string text;
     std::string fontPath;
-    sf::Color color;
+    sf::Color fontColor;
     float textSize;
-    static void* func();
-    std::unordered_map<std::string, bool> imageStates;
-    std::unordered_map<std::string, sf::Texture> images;
+    std::unordered_map<std::string, std::string> imageStates;
+    std::unordered_map<std::string, bool> states;
 };
 
 void
-Button::DrawSprites (sf::RenderWindow& window)
+Button::drawButton(sf::RenderWindow& window)
 {
-    sf::Sprite btnSprite;
-    btnSprite.setTexture(this->normalBtn);
-    btnSprite.setPosition(pos);
-    window.draw(btnSprite);
+    if (states["clicked"])
+    {
+        sprite.setTexture(clickedBtn);
+        states["clicked"] = false;
+        states["after_click"] = true;
+    }
+    else if (states["after_click"])
+    {
+        if (states["hovered"])
+        {
+            sprite.setTexture(clickedBtn);
+        }
+        else
+        {
+            states["after_click"] = false;
+        }
+    }
+    else if (states["hovered"])
+    {
+        sprite.setTexture(hoveredBtn);
+    }
+    else
+    {
+        sprite.setTexture(normalBtn);
+    }
+
+    sprite.setPosition(pos);
+    window.draw(sprite);
 }
 
 void
-Button::isHovered(sf::RenderWindow& window, sf::Sprite sprite)
+Button::updateButton(sf::RenderWindow& window, sf::Event& event)
 {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-    if (sprite.getGlobalBounds().contains(mousePos))
+    states["hovered"] = sprite.getGlobalBounds().contains(mousePos);
+    if (event.type == sf::Event::MouseButtonPressed)
     {
-        sf::Sprite hoveredBtnSprite;
-        hoveredBtnSprite.setTexture(hoveredBtn);
-        hoveredBtnSprite.setPosition(pos);
-        window.draw(hoveredBtnSprite);
+        if (event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (states["hovered"])
+            {
+                states["clicked"] = true;
+            }
+        }
     }
-}
-
-void
-Button::isClicked(sf::RenderWindow& window, sf::Sprite sprite)
-{
-    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-    if (sprite.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    else if (event.type == sf::Event::MouseButtonReleased)
     {
-        sf::Sprite clickedBtnSprite;
-        clickedBtnSprite.setTexture(hoveredBtn);
-        clickedBtnSprite.setPosition(pos);
-        window.draw(clickedBtnSprite);
-        func();
+        if (event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (states["hovered"] && states["after_click"])
+            {
+                states["after_click"] = false;
+                puts("Click!");
+            }
+        }
     }
-}
-
-void*
-Button::func() {
-    std::cout << "LOX";
 }

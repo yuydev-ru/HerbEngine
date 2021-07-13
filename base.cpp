@@ -62,9 +62,9 @@ int
 main()
 {
     std::cout << "";
-    std::unordered_map<std::string, bool> imageStates = { {"normal", false}
-                                                           , {"hovered", false}
-                                                           , {"clicked", false} };
+    std::unordered_map<std::string, std::string> imageStates = { {"normal", "assets/button/normal.png"}
+                                                               , {"hovered", "assets/button/hovered.png"}
+                                                               , {"clicked", "assets/button/clicked.png"} };
     sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
     Button button (sf::Vector2f(100,100), imageStates, "PLAY", "Roboto", sf::Color::White, 14);
     GameState state {};
@@ -159,10 +159,12 @@ main()
                         (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
                 }
             }
+
+            if (event.type == sf::Mouse::isButtonPressed())
         }
 
         window.clear();
-        button.DrawSprites(window);
+        button.drawButton(window);
         updateState(&state, &storage);
         window.display();
     }
