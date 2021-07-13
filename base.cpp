@@ -68,6 +68,9 @@ main()
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
+    sf::Clock clock;
+    state.deltaTime = 0;
+
     while (state.running)
     {
         sf::Event event {};
@@ -146,6 +149,7 @@ main()
         window.clear();
         updateState(&state, &storage);
         window.display();
+        state.deltaTime = clock.restart().asSeconds();
     }
 
     return 0;
