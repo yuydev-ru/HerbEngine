@@ -2,6 +2,7 @@
 
 #include "base.h"
 #include "interface.h"
+#include "gui.h"
 
 #include <iostream>
 
