@@ -7,7 +7,7 @@ class Button
 {
 public:
     Button(const sf::Vector2f& pos, const std::unordered_map<std::string, std::string>& imageStates,
-           const std::string text, const std::string fontPath, const sf::Color fontColor, float textSize)
+           const std::string text, const std::string fontPath, const sf::Color fontColor, float textSize, void func())
     {
         this->normalBtn.loadFromFile(imageStates.at("normal"));
         this->hoveredBtn.loadFromFile(imageStates.at("hovered"));
@@ -19,6 +19,7 @@ public:
         this->fontColor = fontColor;
         this->textSize = textSize;
         this->imageStates = imageStates;
+        this->func = (*func);
 
         this->states = { {"after_click", false}
                        , {"hovered", false}
@@ -38,7 +39,13 @@ private:
     float textSize;
     std::unordered_map<std::string, std::string> imageStates;
     std::unordered_map<std::string, bool> states;
+    void (*func)();
 };
+
+void
+func() {
+    puts("Click!");
+}
 
 void
 Button::drawButton(sf::RenderWindow& window)
@@ -95,7 +102,7 @@ Button::updateButton(sf::RenderWindow& window, sf::Event& event)
             if (states["hovered"] && states["after_click"])
             {
                 states["after_click"] = false;
-                puts("Click!");
+                func();
             }
         }
     }
