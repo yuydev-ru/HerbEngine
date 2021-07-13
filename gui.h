@@ -1,28 +1,24 @@
+#pragma once
+
 #include <utility>
 #include <iostream>
-
-#pragma once
 
 class Button
 {
 public:
     Button (sf::Vector2f pos, const std::unordered_map<std::string, bool>& imageStates, const std::string& text,
-            const std::string& fontPath, sf::Color color, float textSize, void* func)
+            const std::string& fontPath, sf::Color color, float textSize)
     {
-        sf::Texture btn, hoveredBtn, clickedBtn;
-        btn.loadFromFile("assets/button/normal.png");
-        std::cout << btn->getSize().x << '\n';
-        std::cout << btn->getSize().y<< '\n';
-        btn.setSmooth(true);
-        hoveredBtn.loadFromFile("assets/button/hovered.png"); hoveredBtn.setSmooth(true);
-        clickedBtn.loadFromFile("assets/button/clicked.png"); clickedBtn.setSmooth(true);
+        this->btn.loadFromFile("assets/button/normal.png"); this->btn.setSmooth(true);
+        this->hoveredBtn.loadFromFile("assets/button/hovered.png"); this->hoveredBtn.setSmooth(true);
+        this->clickedBtn.loadFromFile("assets/button/clicked.png"); this->clickedBtn.setSmooth(true);
 
         this->pos = pos;
         this->text = text;
         this->fontPath = fontPath;
         this->color = color;
         this->textSize = textSize;
-        this->func = func;
+//        this->(*func) = func;
         this->imageStates = imageStates;
     }
     void DrawSprites (sf::RenderWindow& window);
@@ -36,7 +32,7 @@ private:
     std::string fontPath;
     sf::Color color;
     float textSize;
-    void* func;
+    static void* func();
     std::unordered_map<std::string, bool> imageStates;
     std::unordered_map<std::string, sf::Texture> images;
 };
@@ -44,7 +40,7 @@ private:
 void Button::DrawSprites (sf::RenderWindow& window)
 {
     sf::Sprite btnSprite;
-    btnSprite.setTexture(btn);
+    btnSprite.setTexture(this->btn);
     btnSprite.setPosition(pos);
     window.draw(btnSprite);
 }
@@ -70,6 +66,10 @@ void Button::isClicked (sf::RenderWindow& window, sf::Sprite sprite)
         clickedBtnSprite.setTexture(hoveredBtn);
         clickedBtnSprite.setPosition(pos);
         window.draw(clickedBtnSprite);
-        reinterpret_cast<void*>(func);
+        func();
     }
+}
+
+void *Button::func() {
+    std::cout << "LOX";
 }
