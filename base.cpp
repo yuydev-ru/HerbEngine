@@ -53,11 +53,18 @@ updateState(GameState *state, Storage *storage)
     }
 }
 
+void function () {
+    std::cout << "yes";
+}
+
 int
 main()
 {
+    std::unordered_map<std::string, bool> imageStates = { {"normal", false}
+                                                           , {"hovered", false}
+                                                           , {"clicked", false} };
     sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
-
+    Button button (sf::Vector2f(100,100), imageStates, "PLAY", "Roboto", sf::Color::White, 14, reinterpret_cast<void*>(function));
     GameState state {};
     state.running = true;
     state.window = &window;
@@ -71,6 +78,7 @@ main()
 
     while (state.running)
     {
+        button.DrawSprites(window);
         sf::Event event {};
 
         while (window.pollEvent(event))
