@@ -9,23 +9,24 @@ public:
     Button (sf::Vector2f pos, const std::unordered_map<std::string, bool>& imageStates, const std::string& text,
             const std::string& fontPath, sf::Color color, float textSize)
     {
-        this->btn.loadFromFile("assets/button/normal.png"); this->btn.setSmooth(true);
-        this->hoveredBtn.loadFromFile("assets/button/hovered.png"); this->hoveredBtn.setSmooth(true);
-        this->clickedBtn.loadFromFile("assets/button/clicked.png"); this->clickedBtn.setSmooth(true);
+        this->normalBtn.loadFromFile("assets/button/normal.png");
+        this->hoveredBtn.loadFromFile("assets/button/hovered.png");
+        this->clickedBtn.loadFromFile("assets/button/clicked.png");
 
         this->pos = pos;
         this->text = text;
         this->fontPath = fontPath;
         this->color = color;
         this->textSize = textSize;
-//        this->(*func) = func;
         this->imageStates = imageStates;
     }
+
     void DrawSprites (sf::RenderWindow& window);
     void isHovered (sf::RenderWindow& window, sf::Sprite sprite);
     void isClicked (sf::RenderWindow& window, sf::Sprite sprite);
+
 private:
-    sf::Texture btn, hoveredBtn, clickedBtn;
+    sf::Texture normalBtn, hoveredBtn, clickedBtn;
     sf::Sprite sprite;
     sf::Vector2f pos;
     std::string text;
@@ -37,15 +38,17 @@ private:
     std::unordered_map<std::string, sf::Texture> images;
 };
 
-void Button::DrawSprites (sf::RenderWindow& window)
+void
+Button::DrawSprites (sf::RenderWindow& window)
 {
     sf::Sprite btnSprite;
-    btnSprite.setTexture(this->btn);
+    btnSprite.setTexture(this->normalBtn);
     btnSprite.setPosition(pos);
     window.draw(btnSprite);
 }
 
-void Button::isHovered (sf::RenderWindow& window, sf::Sprite sprite)
+void
+Button::isHovered(sf::RenderWindow& window, sf::Sprite sprite)
 {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     if (sprite.getGlobalBounds().contains(mousePos))
@@ -57,7 +60,8 @@ void Button::isHovered (sf::RenderWindow& window, sf::Sprite sprite)
     }
 }
 
-void Button::isClicked (sf::RenderWindow& window, sf::Sprite sprite)
+void
+Button::isClicked(sf::RenderWindow& window, sf::Sprite sprite)
 {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     if (sprite.getGlobalBounds().contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -70,6 +74,7 @@ void Button::isClicked (sf::RenderWindow& window, sf::Sprite sprite)
     }
 }
 
-void *Button::func() {
+void*
+Button::func() {
     std::cout << "LOX";
 }
