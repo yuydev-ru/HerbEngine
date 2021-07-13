@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <logger/logger.h>
 
 #include <utility>
 #include <vector>
@@ -9,6 +10,8 @@
 #include <unordered_map>
 #include <bitset>
 #include <typeindex>
+#include <string>
+#include <iostream>
 
 #define TYPE(x) std::type_index(typeid(x))
 #define MAX_COMPONENTS 32
@@ -41,6 +44,7 @@ struct Config
     std::unordered_map<std::string, std::string> oppositeKeys;
     std::unordered_map<std::string, sf::Keyboard::Key> keys;
     std::map<sf::Keyboard::Key, KeyData> axisData;
+    logger::LogLevel logLevel;
 };
 
 struct Component {};
@@ -53,6 +57,7 @@ struct GameState
     std::unordered_map<std::string, float> axes;
     std::map<sf::Keyboard::Key, bool> pushedKeys;
     float deltaTime;
+    logger::Logger* logger;
 };
 
 struct Storage
@@ -66,7 +71,7 @@ struct Storage
     Entity lastEntityId = 0;
     std::queue<Entity> freeIds;
     std::set<Entity> usedIds;
-
+    logger::Logger* logger;
     int componentsCount = 0;
 
     void
@@ -97,7 +102,7 @@ struct Storage
             this->entitySignatures[idx] = 0;
         }
         this->usedIds.insert(idx);
-
+        logger->info("Entity " + std::to_string(idx) + " successfully created.");
         return idx;
     }
 
@@ -112,6 +117,7 @@ struct Storage
                 componentPair.second[eid] = nullptr;
             }
         }
+        logger->info("Entity " + std::to_string(eid) + " successfully destroyed.");
         this->freeIds.push(eid);
     }
 
@@ -129,9 +135,14 @@ struct Storage
     template <class T> void
     registerComponent()
     {
-        // TODO(guschin): Добавить логгирование.
-        if (this->componentTypes.find(TYPE(T)) != this->componentTypes.end()) return;
-
+        std::string componentName = TYPE(T).name();
+        if (this->componentTypes.find(TYPE(T)) != this->componentTypes.end())
+        {
+            logger->warning("Component " + componentName + " is already registered.");
+            return;
+        }
+        logger->info("Component " + componentName + " is registered with Component ID " +
+            std::to_string(this->componentsCount) + ".");
         this->componentTypes[TYPE(T)] = this->componentsCount++;
         std::vector<Component *> tmp;
         this->entities.insert(std::make_pair(TYPE(T), tmp));
@@ -140,22 +151,48 @@ struct Storage
     template <class T> T*
     addComponent(Entity eid)
     {
-        // TODO(guschin): Добавить логгирование.
-        if (this->componentTypes.find(TYPE(T)) == this->componentTypes.end()) return nullptr;
-        if (this->usedIds.find(eid) == this->usedIds.end()) return nullptr;
+        std::string componentName = TYPE(T).name();
+        std::string entityID = std::to_string(eid);
+        if (this->componentTypes.find(TYPE(T)) == this->componentTypes.end())
+        {
+            logger->warning("Unknown component " + componentName
+                + " found while adding a new component.");
+            return nullptr;
+        }
+        if (this->usedIds.find(eid) == this->usedIds.end())
+        {
+            logger->warning("Unknown Entity " + entityID
+                + " found while adding a new component.");
+            return nullptr;
+        }
 
         T *obj = new T;
         this->entities[TYPE(T)][eid] = obj;
         this->entitySignatures[eid].set(this->componentTypes[TYPE(T)]);
+
+
+        logger->info("Component " + componentName
+            + " added to Entity " + entityID + ".");
         return obj;
     }
 
     template <class T> T*
     getComponent(Entity eid)
     {
-        // TODO(guschin): Добавить логгирование.
-        if (this->componentTypes.find(TYPE(T)) == this->componentTypes.end()) return nullptr;
-        if (this->usedIds.find(eid) == this->usedIds.end()) return nullptr;
+        std::string componentName = TYPE(T).name();
+        std::string entityID = std::to_string(eid);
+        if (this->componentTypes.find(TYPE(T)) == this->componentTypes.end())
+        {
+            logger->warning("No component " + componentName
+                + " found for Entity " + entityID + ".");
+            return nullptr;
+        }
+        if (this->usedIds.find(eid) == this->usedIds.end())
+        {
+            logger->warning("Unknown Entity " + entityID
+                + " found while adding a new component.");
+            return nullptr;
+        }
 
         return (T*) this->entities[TYPE(T)][eid];
     }
