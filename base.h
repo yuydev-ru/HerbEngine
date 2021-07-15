@@ -53,7 +53,6 @@ struct Config
     std::map<sf::Keyboard::Key, KeyData> axisData;
     logger::LogLevel logLevel;
 };
-struct Component {};
 struct GameState
 {
     bool running = true;
