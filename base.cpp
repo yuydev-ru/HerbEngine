@@ -3,12 +3,32 @@
 #include "base.h"
 #include "interface.h"
 
+#include "parsing.h"
 #include <iostream>
 
 void
 loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
-    config->defaultScene = "MainMenu";
+    Parsing::configFile file = Parsing::parseConfigFile(configPath);
+
+    auto windowArray = Parsing::findEntries(file, "window");
+    for (auto & windowElement: *windowArray)
+    {
+        config->windowWidth = Parsing::parseElement<int>(windowElement,"width");
+        config->windowHeight = Parsing::parseElement<int>(windowElement,"height");
+        config->windowTitle = Parsing::parseElement<std::string>(windowElement,"title");
+    }
+
+    auto sceneArray = Parsing::findEntries(file, "scene");
+    for (auto & sceneElement: *sceneArray)
+    {
+        config->defaultScene = Parsing::parseElement<std::string>(sceneElement,"default");
+    }
+    auto inputArray = Parsing::findEntries(file, "input");
+    for (auto & inputElement: *inputArray)
+    {
+       //config->oppositeKeys = Parsing::parseKeyData<std::string>(file,"oppositeKeys","key","opposite");
+    }
     config->oppositeKeys = { {"up", "down"}
                            , {"down", "up"}
                            , {"right", "left"}
@@ -56,14 +76,15 @@ updateState(GameState *state, Storage *storage)
 int
 main()
 {
-    sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
-
     GameState state {};
+    Config config;
+    loadConfig(&state, "assets/config.json", &config);
+
+    sf::RenderWindow window(sf::VideoMode(config.windowWidth, config.windowHeight), config.windowTitle);
+
+
     state.running = true;
     state.window = &window;
-
-    Config config;
-    loadConfig(&state, "data/config", &config);
 
     Storage storage;
 

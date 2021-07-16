@@ -47,6 +47,9 @@ struct KeyData
 
 struct Config
 {
+    int windowWidth;
+    int windowHeight;
+    std::string windowTitle;
     std::string defaultScene;
     std::unordered_map<std::string, std::string> oppositeKeys;
     std::unordered_map<std::string, sf::Keyboard::Key> keys;
