@@ -7,19 +7,23 @@ class Button
 {
 public:
     Button(const sf::Vector2f& pos, const std::unordered_map<std::string, std::string>& imageStates,
-           const std::string text, const std::string fontPath, const sf::Color fontColor, float textSize, void func())
+           const std::string& text, const std::string& fontPath, const sf::Color fontColor,
+           unsigned textSize, void func())
     {
         this->normalBtn.loadFromFile(imageStates.at("normal"));
         this->hoveredBtn.loadFromFile(imageStates.at("hovered"));
         this->clickedBtn.loadFromFile(imageStates.at("clicked"));
 
         this->pos = pos;
-        this->text = text;
-        this->fontPath = fontPath;
-        this->fontColor = fontColor;
-        this->textSize = textSize;
-        this->imageStates = imageStates;
-        this->func = (*func);
+        this->func = *func;
+
+        sf::Font font;
+        font.loadFromFile(fontPath);
+        this->buttonText.setFont(font);
+        this->buttonText.setString(text);
+        this->buttonText.setFillColor(fontColor);
+        this->buttonText.setCharacterSize(textSize);
+        this->buttonText.setStyle(sf::Text::Regular);
 
         this->states = { {"after_click", false}
                        , {"hovered", false}
@@ -33,19 +37,10 @@ private:
     sf::Texture normalBtn, hoveredBtn, clickedBtn;
     sf::Sprite sprite;
     sf::Vector2f pos;
-    std::string text;
-    std::string fontPath;
-    sf::Color fontColor;
-    float textSize;
-    std::unordered_map<std::string, std::string> imageStates;
+    sf::Text buttonText;
     std::unordered_map<std::string, bool> states;
     void (*func)();
 };
-
-void
-func() {
-    puts("Click!");
-}
 
 void
 Button::drawButton(sf::RenderWindow& window)
@@ -78,6 +73,7 @@ Button::drawButton(sf::RenderWindow& window)
 
     sprite.setPosition(pos);
     window.draw(sprite);
+    window.draw(buttonText);
 }
 
 void
@@ -106,4 +102,9 @@ Button::updateButton(sf::RenderWindow& window, sf::Event& event)
             }
         }
     }
+}
+
+void
+func() {
+    puts("Click!");
 }
