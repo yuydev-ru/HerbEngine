@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 class Button
 {
@@ -17,17 +18,23 @@ public:
         this->pos = pos;
         this->func = *func;
 
-        sf::Font font;
-        font.loadFromFile(fontPath);
-        this->buttonText.setFont(font);
+        this->font = new sf::Font;
+        font->loadFromFile(fontPath);
+        this->buttonText.setFont(*font);
         this->buttonText.setString(text);
         this->buttonText.setFillColor(fontColor);
         this->buttonText.setCharacterSize(textSize);
         this->buttonText.setStyle(sf::Text::Regular);
+        this->buttonText.setPosition(50.f, 50.f);
 
         this->states = { {"after_click", false}
                        , {"hovered", false}
                        , {"clicked", false} };
+    }
+
+    ~Button()
+    {
+        delete font;
     }
 
     void drawButton(sf::RenderWindow& window);
@@ -36,6 +43,7 @@ public:
 private:
     sf::Texture normalBtn, hoveredBtn, clickedBtn;
     sf::Sprite sprite;
+    sf::Font* font;
     sf::Vector2f pos;
     sf::Text buttonText;
     std::unordered_map<std::string, bool> states;
