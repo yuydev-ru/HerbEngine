@@ -4,11 +4,34 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+class Text
+{
+public:
+    Text(const sf::Vector2f& pos, const std::string& str, const unsigned characterSize = 14,
+         const sf::Color fillColor = sf::Color::White,
+         const std::string& fontPath = "assets/fonts/Neucha-Regular.ttf")
+    {
+        this->text.setString(str);
+        this->text.setCharacterSize(characterSize);
+        this->text.setFillColor(fillColor);
+
+        this->font = new sf::Font;
+        font->loadFromFile(fontPath);
+        this->text.setFont(*font);
+    }
+
+    ~Text() { delete font; }
+
+private:
+    sf::Font* font;
+    sf::Text text;
+};
+
 class Button
 {
 public:
     Button(const sf::Vector2f& pos, const std::unordered_map<std::string, std::string>& imageStates,
-           const std::string& text, const std::string& fontPath, const sf::Color fontColor,
+           const std::string& text, const std::string& fontPath, const sf::Color fillColor,
            unsigned textSize, void func())
     {
         this->normalBtn.loadFromFile(imageStates.at("normal"));
@@ -21,8 +44,9 @@ public:
         this->font = new sf::Font;
         font->loadFromFile(fontPath);
         this->buttonText.setFont(*font);
+
         this->buttonText.setString(text);
-        this->buttonText.setFillColor(fontColor);
+        this->buttonText.setFillColor(fillColor);
         this->buttonText.setCharacterSize(textSize);
         this->buttonText.setStyle(sf::Text::Regular);
         this->buttonText.setPosition(50.f, 50.f);
@@ -32,13 +56,10 @@ public:
                        , {"clicked", false} };
     }
 
-    ~Button()
-    {
-        delete font;
-    }
+    ~Button() { delete font; }
 
-    void drawButton(sf::RenderWindow& window);
-    void updateButton(sf::RenderWindow& window, sf::Event&);
+    void drawButton(sf::RenderWindow&);
+    void updateButton(sf::RenderWindow&, sf::Event&);
 
 private:
     sf::Texture normalBtn, hoveredBtn, clickedBtn;

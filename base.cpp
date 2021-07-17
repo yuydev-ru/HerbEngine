@@ -62,7 +62,8 @@ main()
                                                                , {"clicked", "assets/button/clicked.png"} };
 
     sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
-    Button button (sf::Vector2f(100,100), imageStates, "PLAY", "assets/fonts/OtomanopeeOne-Regular.ttf", sf::Color::White, 14, *func);
+    Button button ( sf::Vector2f(100,100), imageStates, "PLAY", "assets/fonts/Neucha-Regular.ttf"
+                  , sf::Color::White, 14, func );
     GameState state {};
     state.running = true;
     state.window = &window;
