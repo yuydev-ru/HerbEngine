@@ -11,7 +11,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
     Parsing::configFile file = Parsing::parseConfigFile(configPath);
 
-    auto windowArray = Parsing::findEntries(file, "window");
+    auto windowArray = file.find("window");
     for (auto & windowElement: *windowArray)
     {
         config->windowWidth = Parsing::parseElement<int>(windowElement,"width");
@@ -19,12 +19,12 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
         config->windowTitle = Parsing::parseElement<std::string>(windowElement,"title");
     }
 
-    auto sceneArray = Parsing::findEntries(file, "scene");
+    auto sceneArray =  file.find("scene");
     for (auto & sceneElement: *sceneArray)
     {
         config->defaultScene = Parsing::parseElement<std::string>(sceneElement,"default");
     }
-    auto inputArray = Parsing::findEntries(file, "input");
+    auto inputArray =  file.find("input");
     for (auto & inputElement: *inputArray)
     {
        //config->oppositeKeys = Parsing::parseKeyData<std::string>(file,"oppositeKeys","key","opposite");
@@ -48,6 +48,43 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     state->axes = { {"vertical", 0}
                   , {"horizontal", 0} };
     config->logLevel = logger::INFO;
+}
+
+Entity
+loadEntity(Parsing::configFile &components, GameState *state, Storage *storage)
+{
+    Entity entity = storage->createEntity();
+
+    for (auto & component : components)
+    {
+        std::string name = Parsing::parseElement<std::string>(component, "type");
+        if (storage->deserializers.find(name) != storage->deserializers.end())
+        {
+            Component *comp = storage->deserializers[name](component);
+            auto type = storage->typeNames.at(name);
+            storage->entities[type][entity] = comp;
+            storage->entitySignatures[entity].set(storage->componentTypes[type]);
+
+            if (name == "Camera")
+            {
+                state->currentCamera = entity;
+            }
+        }
+    }
+
+    return entity;
+}
+
+void
+loadScene(const Config *config, const std::string& sceneName, GameState *state, Storage *storage)
+{
+    Parsing::configFile f = Parsing::parseConfigFile(sceneName);
+    auto entities = f.find("entities");
+
+    for (auto components : *entities)
+    {
+        loadEntity(components, state, storage);
+    }
 }
 
 void

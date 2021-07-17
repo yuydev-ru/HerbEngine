@@ -153,7 +153,6 @@ struct Storage
         }
         logger->info("Component " + componentName + " is registered with Component ID " +
             std::to_string(this->componentsCount) + ".");
-        // TODO(guschin): Добавить логгирование.
         if (this->componentTypes.find(TYPE(T)) != this->componentTypes.end()) return;
 
 //        this->typeNames.insert(std::make_pair(name, TYPE(T)));
