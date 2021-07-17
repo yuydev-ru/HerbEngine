@@ -3,13 +3,32 @@
 #include "base.h"
 #include "interface.h"
 #include "gui.h"
-
+#include "parsing.h"
 #include <iostream>
 
 void
 loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
-    config->defaultScene = "MainMenu";
+    Parsing::configFile file = Parsing::parseConfigFile(configPath);
+
+    auto windowArray = file.find("window");
+    for (auto & windowElement: *windowArray)
+    {
+        config->windowWidth = Parsing::parseElement<int>(windowElement,"width");
+        config->windowHeight = Parsing::parseElement<int>(windowElement,"height");
+        config->windowTitle = Parsing::parseElement<std::string>(windowElement,"title");
+    }
+
+    auto sceneArray =  file.find("scene");
+    for (auto & sceneElement: *sceneArray)
+    {
+        config->defaultScene = Parsing::parseElement<std::string>(sceneElement,"default");
+    }
+    auto inputArray =  file.find("input");
+    for (auto & inputElement: *inputArray)
+    {
+       //config->oppositeKeys = Parsing::parseKeyData<std::string>(file,"oppositeKeys","key","opposite");
+    }
     config->oppositeKeys = { {"up", "down"}
                            , {"down", "up"}
                            , {"right", "left"}
@@ -29,6 +48,43 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     state->axes = { {"vertical", 0}
                   , {"horizontal", 0} };
     config->logLevel = logger::INFO;
+}
+
+Entity
+loadEntity(Parsing::configFile &components, GameState *state, Storage *storage)
+{
+    Entity entity = storage->createEntity();
+
+    for (auto & component : components)
+    {
+        std::string name = Parsing::parseElement<std::string>(component, "type");
+        if (storage->deserializers.find(name) != storage->deserializers.end())
+        {
+            Component *comp = storage->deserializers[name](component);
+            auto type = storage->typeNames.at(name);
+            storage->entities[type][entity] = comp;
+            storage->entitySignatures[entity].set(storage->componentTypes[type]);
+
+            if (name == "Camera")
+            {
+                state->currentCamera = entity;
+            }
+        }
+    }
+
+    return entity;
+}
+
+void
+loadScene(const Config *config, const std::string& sceneName, GameState *state, Storage *storage)
+{
+    Parsing::configFile f = Parsing::parseConfigFile(sceneName);
+    auto entities = f.find("entities");
+
+    for (auto components : *entities)
+    {
+        loadEntity(components, state, storage);
+    }
 }
 
 void
@@ -57,19 +113,15 @@ updateState(GameState *state, Storage *storage)
 int
 main()
 {
-    std::unordered_map<std::string, std::string> imageStates = { {"normal", "assets/button/normal.png"}
-                                                               , {"hovered", "assets/button/hovered.png"}
-                                                               , {"clicked", "assets/button/clicked.png"} };
-
-    sf::RenderWindow window(sf::VideoMode(480, 480), "Engine");
-    Button button ( sf::Vector2f(100,100), imageStates, "PLAY", "assets/fonts/Neucha-Regular.ttf"
-                  , sf::Color::White, 14, func );
     GameState state {};
+    Config config;
+    loadConfig(&state, "assets/config.json", &config);
+
+    sf::RenderWindow window(sf::VideoMode(config.windowWidth, config.windowHeight), config.windowTitle);
+
+
     state.running = true;
     state.window = &window;
-
-    Config config;
-    loadConfig(&state, "data/config", &config);
 
     Storage storage;
 
@@ -82,6 +134,13 @@ main()
 
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
+
+    std::unordered_map<std::string, std::string> imageStates = { {"normal", "assets/button/normal.png"}
+            , {"hovered", "assets/button/hovered.png"}
+            , {"clicked", "assets/button/clicked.png"} };
+
+    Button button ( sf::Vector2f(100,100), imageStates, "PLAY", "assets/fonts/Neucha-Regular.ttf"
+            , sf::Color::White, 14, func );
 
     while (state.running)
     {
@@ -154,7 +213,6 @@ main()
                     state.axes[pressedKeyData.axis] =
                         (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
                 }
-
             }
             button.updateButton(window, event);
         }
