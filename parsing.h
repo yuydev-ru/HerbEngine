@@ -24,7 +24,7 @@ namespace Parsing
     template<class T> static sf::Vector2<T>
     parseVector2(configFile &dict, const std::string &key)
     {
-        auto buf = dict.find(key)->get<std::vector<float>>();
+        auto buf = dict.find(key)->get<std::vector<T>>();
         return { buf[0], buf[1] };
     }
 

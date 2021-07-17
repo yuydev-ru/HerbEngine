@@ -155,7 +155,6 @@ struct Storage
             std::to_string(this->componentsCount) + ".");
         if (this->componentTypes.find(TYPE(T)) != this->componentTypes.end()) return;
 
-//        this->typeNames.insert(std::make_pair(name, TYPE(T)));
         this->typeNames.insert(std::make_pair(name, TYPE(T)));
         this->deserializers.insert(std::make_pair(name, T::deserialize));
 

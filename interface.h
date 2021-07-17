@@ -3,6 +3,3 @@
 
 void
 initializeEngine(GameState *, Storage *);
-
-void
-loadScene(const Config *, const std::string &, GameState *, Storage *);
