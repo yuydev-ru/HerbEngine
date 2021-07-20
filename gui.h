@@ -4,7 +4,12 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-class Text
+class Widget
+{
+    // https://stackoverflow.com/questions/26208918/vector-that-can-have-3-different-data-types-c
+};
+
+class Text : Widget
 {
 public:
     Text(const sf::Vector2f& pos, const std::string& str, const unsigned characterSize = 14,
@@ -15,6 +20,9 @@ public:
         this->text.setCharacterSize(characterSize);
         this->text.setFillColor(fillColor);
 
+        this->textRect = this->text.getLocalBounds();
+        this->pos = pos;
+
         this->font = new sf::Font;
         font->loadFromFile(fontPath);
         this->text.setFont(*font);
@@ -22,12 +30,23 @@ public:
 
     ~Text() { delete font; }
 
+    void drawText(sf::RenderWindow&);
+
 private:
-    sf::Font* font;
     sf::Text text;
+    sf::Font* font;
+    sf::Vector2f pos;
+    sf::FloatRect textRect;
 };
 
-class Button
+void
+Text::drawText(sf::RenderWindow &window)
+{
+    text.setPosition(pos);
+    window.draw(text);
+}
+
+class Button : Widget
 {
 public:
     Button(const sf::Vector2f& pos, const std::unordered_map<std::string, std::string>& imageStates,
@@ -100,7 +119,6 @@ Button::drawButton(sf::RenderWindow& window)
         sprite.setTexture(normalBtn);
     }
 
-    sprite.setPosition(pos);
     window.draw(sprite);
     window.draw(buttonText);
 }

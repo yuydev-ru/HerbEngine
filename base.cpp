@@ -136,11 +136,11 @@ main()
     loadScene(&config, config.defaultScene, &state, &storage);
 
     std::unordered_map<std::string, std::string> imageStates = { {"normal", "assets/button/normal.png"}
-            , {"hovered", "assets/button/hovered.png"}
-            , {"clicked", "assets/button/clicked.png"} };
-
-    Button button ( sf::Vector2f(100,100), imageStates, "PLAY", "assets/fonts/Neucha-Regular.ttf"
-            , sf::Color::White, 14, func );
+                                                               , {"hovered", "assets/button/hovered.png"}
+                                                               , {"clicked", "assets/button/clicked.png"} };
+    Button button( sf::Vector2f(100, 100), imageStates, "PLAY", "assets/fonts/Neucha-Regular.ttf"
+                 , sf::Color::White, 14, func );
+    Text title(sf::Vector2f(float(window.getSize().x) / 2.f, 150.f), "Titled game", 48);
 
     while (state.running)
     {
@@ -221,6 +221,7 @@ main()
 
         updateState(&state, &storage);
         button.drawButton(window);
+        title.drawText(window);
         window.display();
     }
 
