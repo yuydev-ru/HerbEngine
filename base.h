@@ -35,7 +35,7 @@ struct KeyData
     std::string axisType;
     float value = 0;
 
-    KeyData (std::string axis, std::string axisType, float value)
+    KeyData(std::string axis, std::string axisType, float value)
     {
         this->axis = std::move(axis);
         this->axisType = std::move(axisType);
@@ -56,6 +56,7 @@ struct Config
     std::map<sf::Keyboard::Key, KeyData> axisData;
     logger::LogLevel logLevel;
 };
+
 struct GameState
 {
     bool running = true;
