@@ -44,9 +44,10 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
                        , {config->keys["right"], KeyData("horizontal", "hold", 1)}
                        , {config->keys["left"], KeyData("horizontal", "hold", -1)}
                        , {config->keys["interact"], KeyData("", "push", 1)}
-                       , {config->keys["jump"], KeyData("", "push", 0)} };
+                       , {config->keys["jump"], KeyData("jump", "push", 1)} };
     state->axes = { {"vertical", 0}
-                  , {"horizontal", 0} };
+                  , {"horizontal", 0}
+                  , {"jump", 0} };
     config->logLevel = logger::INFO;
 }
 
