@@ -44,9 +44,11 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
                        , {config->keys["right"], KeyData("horizontal", "hold", 1)}
                        , {config->keys["left"], KeyData("horizontal", "hold", -1)}
                        , {config->keys["interact"], KeyData("", "push", 1)}
-                       , {config->keys["jump"], KeyData("", "push", 0)} };
+                       , {config->keys["jump"], KeyData("jump", "push", 1)} };
     state->axes = { {"vertical", 0}
-                  , {"horizontal", 0} };
+                  , {"horizontal", 0}
+                  , {"jump", 0}
+                  };
     config->logLevel = logger::INFO;
 }
 
@@ -146,8 +148,17 @@ main()
     {
         sf::Event event {};
 
+        for (const auto& axis : config.axisData)
+        {
+            if (axis.second.axisType == "push")
+            {
+                state.axes[axis.second.axis] = 0;
+            }
+        }
+
         while (window.pollEvent(event))
         {
+
             if (event.type == sf::Event::Closed)
             {
                 window.close();
@@ -168,20 +179,12 @@ main()
                 {
                     if (state.pushedKeys[event.key.code])
                     {
-                        pressedKeyData.value = 0;
+                        state.axes[pressedKeyData.axis] = 0;
                     }
                     else
                     {
                         state.pushedKeys[event.key.code] = true;
-                        pressedKeyData.value = 1;
-
-                        for (const auto& it : config.keys)
-                        {
-                            if (it.second == event.key.code)
-                            {
-                                std::cout << it.first << '\n';
-                            }
-                        }
+                        state.axes[pressedKeyData.axis] = pressedKeyData.value;
                     }
                 }
                 else if (pressedKeyData.axisType == "hold")
