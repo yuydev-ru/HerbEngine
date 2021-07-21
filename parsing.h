@@ -1,3 +1,6 @@
+#ifndef ENGINE_PARSING_H
+#define ENGINE_PARSING_H
+
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <fstream>
@@ -34,3 +37,5 @@ namespace Parsing
 
     }
 }
+
+#endif
