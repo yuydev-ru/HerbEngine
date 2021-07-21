@@ -3,7 +3,7 @@
 #include "base.h"
 #include "interface.h"
 
-#include "parsing.h"
+
 #include <iostream>
 
 void
@@ -43,11 +43,12 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
                        , {config->keys["down"], KeyData("vertical", "hold", -1)}
                        , {config->keys["right"], KeyData("horizontal", "hold", 1)}
                        , {config->keys["left"], KeyData("horizontal", "hold", -1)}
-                       , {config->keys["interact"], KeyData("", "push", 1)}
+                       , {config->keys["interact"], KeyData("interact", "push", 1)}
                        , {config->keys["jump"], KeyData("jump", "push", 1)} };
     state->axes = { {"vertical", 0}
                   , {"horizontal", 0}
                   , {"jump", 0}
+                  , {"interact", 0}
                   };
     config->logLevel = logger::INFO;
 }
@@ -80,12 +81,17 @@ loadEntity(Parsing::configFile &components, GameState *state, Storage *storage)
 void
 loadScene(const Config *config, const std::string& sceneName, GameState *state, Storage *storage)
 {
+
     Parsing::configFile f = Parsing::parseConfigFile(sceneName);
     auto entities = f.find("entities");
+
+    // TODO(KIKITA)
+
 
     for (auto components : *entities)
     {
         loadEntity(components, state, storage);
+
     }
 }
 
