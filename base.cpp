@@ -143,17 +143,12 @@ main()
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
+    sf::Clock clock;
+    state.deltaTime = 0;
+
     while (state.running)
     {
         sf::Event event {};
-
-        for (const auto& axis : config.axisData)
-        {
-            if (axis.second.axisType == "push")
-            {
-                state.axes[axis.second.axis] = 0;
-            }
-        }
 
         while (window.pollEvent(event))
         {
@@ -208,6 +203,7 @@ main()
                 if (pressedKeyData.axisType == "push")
                 {
                     state.pushedKeys[event.key.code] = false;
+                    state.axes[pressedKeyData.axis] = 0;
                 }
                 else if (pressedKeyData.axisType == "hold")
                 {
@@ -220,6 +216,7 @@ main()
         window.clear();
         updateState(&state, &storage);
         window.display();
+        state.deltaTime = clock.restart().asSeconds();
     }
 
     return 0;
