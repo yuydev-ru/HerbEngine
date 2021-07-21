@@ -144,14 +144,6 @@ main()
     {
         sf::Event event {};
 
-        for (const auto& axis : config.axisData)
-        {
-            if (axis.second.axisType == "push")
-            {
-                state.axes[axis.second.axis] = 0;
-            }
-        }
-
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
@@ -205,6 +197,7 @@ main()
                 if (pressedKeyData.axisType == "push")
                 {
                     state.pushedKeys[event.key.code] = false;
+                    state.axes[pressedKeyData.axis] = 0;
                 }
                 else if (pressedKeyData.axisType == "hold")
                 {
