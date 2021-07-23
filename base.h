@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENGINE_BASE_H
+#define ENGINE_BASE_H
 
 #include <SFML/Graphics.hpp>
 #include <logger/logger.h>
@@ -214,3 +215,5 @@ struct Storage
         return (T*) this->entities[TYPE(T)][eid];
     }
 };
+
+#endif

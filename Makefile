@@ -14,12 +14,16 @@ LIB_DIR = $(PREFIX)/lib
 BUILD_DIR = $(PREFIX)/build
 PACKAGE_DIR = $(PREFIX)/package
 
-TARGET=$(BUILD_DIR)/engine.o
+all: base.o rendering.o physics.o
 
-all: $(TARGET)
-$(TARGET): base.h base.cpp interface.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c base.cpp -o $(BUILD_DIR)/engine.o
+base.o: base.h base.cpp interface.h
+	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c base.cpp -o $(BUILD_DIR)/base.o
 
+rendering.o: components/rendering.cpp components/rendering.h
+	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/rendering.cpp -o $(BUILD_DIR)/rendering.o
+
+physics.o: components/physics.cpp components/physics.h
+	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/physics.cpp -o $(BUILD_DIR)/physics.o
 
 clean:
 ifeq ($(OS),Windows_NT)
