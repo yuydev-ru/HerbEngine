@@ -2,6 +2,7 @@
 
 #include "base.h"
 #include "interface.h"
+#include "components.h"
 
 
 #include <iostream>
@@ -118,6 +119,21 @@ updateState(GameState *state, Storage *storage)
     }
 }
 
+void
+internalRegisterComponents(GameState *state, Storage *storage)
+{
+    storage->registerComponent<Transform>("Transform");
+    storage->registerComponent<Sprite>("Sprite");
+    storage->registerComponent<Camera>("Camera");
+    storage->registerComponent<Collider>("Collider");
+    storage->registerComponent<Physics>("Physics");
+
+    storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
+    storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
+    storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
+    storage->registerSystem(physics, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
+}
+
 int
 main()
 {
@@ -140,6 +156,7 @@ main()
     storage.logger = &logger;
     state.logger = &logger;
 
+    internalRegisterComponents(&state, &storage);
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
