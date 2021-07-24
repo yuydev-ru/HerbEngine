@@ -4,5 +4,6 @@
 #include "components/transform.h"
 #include "components/rendering.h"
 #include "components/physics.h"
+#include "components/sound.h"
 
 #endif

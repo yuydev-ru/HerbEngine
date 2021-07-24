@@ -127,7 +127,9 @@ internalRegisterComponents(GameState *state, Storage *storage)
     storage->registerComponent<Camera>("Camera");
     storage->registerComponent<Collider>("Collider");
     storage->registerComponent<Physics>("Physics");
+    storage->registerComponent<Sound>("Sound");
 
+    storage->registerSystem(setupSound,{TYPE(Sound)});
     storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
     storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
     storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
