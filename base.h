@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <logger/logger.h>
 
-#include "parsing.h"
+#include "parser.h"
+#include "inputdata.h"
 
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include <set>
 #include <unordered_map>
 #include <bitset>
+#include <iterator>
 #include <typeindex>
 #include <string>
 #include <iostream>
@@ -27,9 +29,9 @@ struct Component {};
 
 typedef unsigned int Entity;
 typedef void (*System)(GameState *, Storage *, Entity);
-typedef Component *(*Deserializer)(Parsing::configFile&);
+typedef Component *(*Deserializer)(Parser&);
 typedef std::bitset<MAX_COMPONENTS> Signature;
-
+//inputData inputArray;
 struct KeyData
 {
     std::string axis;

@@ -2,8 +2,7 @@
 #define ENGINE_RENDERING_H
 
 #include "../base.h"
-#include "../parsing.h"
-
+#include "../parser.h"
 #include <SFML/Graphics.hpp>
 
 struct Sprite : Component
@@ -14,11 +13,11 @@ struct Sprite : Component
     sf::Sprite sprite;
 
     static Component *
-    deserialize(Parsing::configFile &dict)
+    deserialize(Parser &parser)
     {
         auto spr = new Sprite;
 
-        spr->assetPath = Parsing::parseElement<std::string>(dict, "assetPath");
+        spr->assetPath = parser.parseElement<std::string>("assetPath");
 
         spr->image.loadFromFile(spr->assetPath);
         spr->texture.loadFromImage(spr->image);
@@ -37,11 +36,10 @@ struct Camera : Component
     sf::Vector2f scale = {1, 1};
 
     static Component *
-    deserialize(Parsing::configFile &dict)
+    deserialize(Parser &parser)
     {
         auto c = new Camera;
-
-        c->scale = Parsing::parseVector2<float>(dict, "scale");
+        c->scale = parser.parseVector2<float>("scale");
 
         return c;
     }
