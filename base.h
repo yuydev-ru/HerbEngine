@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <logger/logger.h>
 
-#include <nlohmann/json.hpp>
+#include "parser.h"
+#include "inputdata.h"
 
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include <set>
 #include <unordered_map>
 #include <bitset>
+#include <iterator>
 #include <typeindex>
 #include <string>
 #include <iostream>
@@ -19,15 +21,13 @@
 #define TYPE(x) std::type_index(typeid(x))
 #define MAX_COMPONENTS 32
 
-using json = nlohmann::json;
-
 struct Storage;
 struct GameState;
 struct Component {};
 
 typedef unsigned int Entity;
 typedef void (*System)(GameState *, Storage *, Entity);
-typedef Component *(*Deserializer)(json&);
+typedef Component *(*Deserializer)(Parser&);
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
 struct KeyData

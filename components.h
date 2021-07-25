@@ -5,5 +5,6 @@
 #include "components/rendering.h"
 #include "components/physics.h"
 #include "components/gui.h"
+#include "components/sound.h"
 
 #endif

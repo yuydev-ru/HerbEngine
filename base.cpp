@@ -3,64 +3,73 @@
 #include "base.h"
 #include "interface.h"
 #include "components.h"
+#include <unordered_map>
 
-#include "parsing.h"
+#include "parser.h"
+#include "inputdata.h"
 #include <iostream>
 
 void
 loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
-    Parsing::configFile file = Parsing::parseConfigFile(configPath);
+    Parser file(configPath);
+    inputData inputArray;
 
-    auto windowArray = file.find("window");
-    for (auto & windowElement: *windowArray)
+    config->windowWidth = file.parseElement<int>("window", "width");
+    config->windowHeight = file.parseElement<int>("window", "height");
+    config->windowTitle = file.parseElement<std::string>("window", "title");
+
+    config->defaultScene = file.parseElement<std::string>("scene", "default");
+
+    Parser opKeys(configPath,{"input", "oppositeKeys"});
+    for (int i = 0; i < (int) opKeys.size(); ++i)
     {
-        config->windowWidth = Parsing::parseElement<int>(windowElement,"width");
-        config->windowHeight = Parsing::parseElement<int>(windowElement,"height");
-        config->windowTitle = Parsing::parseElement<std::string>(windowElement,"title");
+        std::string key1 = opKeys.parseObjectElement<std::string>(i, 0);
+        std::string key2 = opKeys.parseObjectElement<std::string>(i,  1);
+        config->oppositeKeys.insert(make_pair(key1,key2));
     }
 
-    auto sceneArray =  file.find("scene");
-    for (auto & sceneElement: *sceneArray)
+    Parser mainKeys(configPath,{"input", "keys"});
+    for (int i = 0; i < (int) mainKeys.size(); ++i)
     {
-        config->defaultScene = Parsing::parseElement<std::string>(sceneElement,"default");
+        std::string key = mainKeys.parseObjectElement<std::string>(i,0);
+        std::string value = mainKeys.parseObjectElement<std::string>(i, 1);
+        config->keys.insert(make_pair(key,inputArray.stringToKeyboardKey(value)));
     }
-    auto inputArray =  file.find("input");
-    for (auto & inputElement: *inputArray)
+
+    Parser axisKeys(configPath,{"input", "axisData"});
+    for (int i = 0; i < (int) axisKeys.size(); ++i)
     {
-       //config->oppositeKeys = Parsing::parseKeyData<std::string>(file,"oppositeKeys","key","opposite");
+       KeyData data;
+
+       std::string key_tmp = axisKeys.parseObjectElement<std::string>(i, "key");
+
+       data.axis = axisKeys.parseObjectElement<std::string>(i, "axis");
+       data.axisType = axisKeys.parseObjectElement<std::string>(i, "axisType");
+       data.value = axisKeys.parseObjectElement<float>(i, "value");
+
+       config->axisData.insert(std::make_pair(config->keys[key_tmp],data));
     }
-    config->oppositeKeys = { {"up", "down"}
-                           , {"down", "up"}
-                           , {"right", "left"}
-                           , {"left", "right"} };
-    config->keys = { {"up", sf::Keyboard::Key::W}
-                   , {"down", sf::Keyboard::Key::S}
-                   , {"left", sf::Keyboard::Key::A}
-                   , {"right", sf::Keyboard::Key::D}
-                   , {"interact", sf::Keyboard::Key::E}
-                   , {"jump", sf::Keyboard::Key::Space} };
-    config->axisData = { {config->keys["up"], KeyData("vertical", "hold", 1)}
-                       , {config->keys["down"], KeyData("vertical", "hold", -1)}
-                       , {config->keys["right"], KeyData("horizontal", "hold", 1)}
-                       , {config->keys["left"], KeyData("horizontal", "hold", -1)}
-                       , {config->keys["interact"], KeyData("", "push", 1)}
-                       , {config->keys["jump"], KeyData("jump", "push", 1)} };
-    state->axes = { {"vertical", 0}
-                  , {"horizontal", 0}
-                  , {"jump", 0}
-                  };
-    config->logLevel = logger::INFO;
+
+    Parser axes(configPath,{"input","axes"});
+    for (int i = 0; i < (int) axes.size(); ++i)
+    {
+        std::string axis = axes.parseObjectElement<std::string>(i, 0);
+        auto value = axes.parseObjectElement<float>(i, 1);
+        state->axes.insert(make_pair(axis,value));
+    }
+
+    config->logLevel = static_cast<logger::LogLevel>(file.parseElement<int>("debug", "logLevel"));
 }
 
 Entity
-loadEntity(Parsing::configFile &components, GameState *state, Storage *storage)
+loadEntity(Parser &components, GameState *state, Storage *storage)
 {
     Entity entity = storage->createEntity();
-
-    for (auto & component : components)
+    for (components.iterator = components.data.begin(); components.iterator  != components.data.end(); ++components.iterator)
     {
-        std::string name = Parsing::parseElement<std::string>(component, "type");
+        Parser component(*components.iterator);
+        std::string name = component.parseElement<std::string>("type");
         if (storage->deserializers.find(name) != storage->deserializers.end())
         {
             Component *comp = storage->deserializers[name](component);
@@ -81,12 +90,12 @@ loadEntity(Parsing::configFile &components, GameState *state, Storage *storage)
 void
 loadScene(const Config *config, const std::string& sceneName, GameState *state, Storage *storage)
 {
-    Parsing::configFile f = Parsing::parseConfigFile(sceneName);
-    auto entities = f.find("entities");
+    Parser file(sceneName,{"entities"});
 
-    for (auto components : *entities)
+    for (file.iterator = file.data.begin(); file.iterator  != file.data.end(); ++file.iterator)
     {
-        loadEntity(components, state, storage);
+        Parser parser(*file.iterator);
+        loadEntity(parser, state, storage);
     }
 }
 
@@ -121,7 +130,9 @@ internalRegisterComponents(GameState *state, Storage *storage)
     storage->registerComponent<Camera>("Camera");
     storage->registerComponent<Collider>("Collider");
     storage->registerComponent<Physics>("Physics");
+    storage->registerComponent<Sound>("Sound");
 
+    storage->registerSystem(setupSound,{TYPE(Sound)});
     storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
     storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
     storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});

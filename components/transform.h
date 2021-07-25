@@ -2,8 +2,7 @@
 #define GAME_TRANSFORM_H
 
 #include "../base.h"
-#include "../parsing.h"
-
+#include "../parser.h"
 #include <SFML/Graphics.hpp>
 
 
@@ -13,12 +12,11 @@ struct Transform : Component
     sf::Vector2f scale = {1, 1};
 
     static Component *
-    deserialize(Parsing::configFile &dict)
+    deserialize(Parser &parser)
     {
         auto t = new Transform;
-
-        t->position = Parsing::parseVector2<float>(dict, "position");
-        t->scale = Parsing::parseVector2<float>(dict, "scale");
+        t->position = parser.parseVector2<float>("position");
+        t->scale = parser.parseVector2<float>("scale");
 
         return t;
     }
