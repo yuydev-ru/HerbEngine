@@ -11,8 +11,8 @@ struct Sound : Component
 
     std::string name;
     std::string assetPath;
-    float volume;
-    bool isLooped;
+    float volume = 0;
+    bool isLooped = false;
     bool playOnStart = false;
 
     sf::SoundBuffer buffer;
