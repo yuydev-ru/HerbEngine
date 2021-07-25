@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
-#include <SFML/Graphics.hpp>
 
 struct Parser
 {
@@ -13,6 +12,7 @@ struct Parser
     typedef nlohmann::json::iterator backend_iterator;
     backend data;
     backend_iterator iterator;
+
     explicit Parser(backend &data) : data(data) {}
 
     explicit Parser(const std::string &path)
@@ -60,13 +60,13 @@ struct Parser
         return this->data[index].at(key);
     }
 
-
     template<class T> sf::Vector2 <T>
     parseVector2(const std::string &key)
     {
         auto buf = this->data.find(key)->get<std::vector<T>>();
         return { buf[0], buf[1] };
     }
+
     unsigned int
     size()
     {

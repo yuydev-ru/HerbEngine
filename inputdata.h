@@ -1,10 +1,14 @@
-#ifndef ENGINE_KEYDATA
-#define ENGINE_KEYDATA
+#ifndef ENGINE_INPUTDATA_H
+#define ENGINE_INPUTDATA_H
+
 #include<string>
 #include<unordered_map>
 #include<SFML/Window.hpp>
-struct inputData{
+
+struct inputData
+{
     std::unordered_map<std::string, sf::Keyboard::Key> data;
+
 #define INSERT_KEYDATA(input_key) this->data.insert(std::make_pair(#input_key, sf::Keyboard::input_key));
     inputData()
     {
@@ -113,11 +117,12 @@ struct inputData{
         INSERT_KEYDATA(Pause)
     }
 #undef INSERT_KEYDATA
-sf::Keyboard::Key
-stringToKeyboardKey(const std::string &key)
-{
-        return this->data[key];
-}
-};
-#endif
 
+    sf::Keyboard::Key
+    stringToKeyboardKey(const std::string &key)
+    {
+            return this->data[key];
+    }
+};
+
+#endif

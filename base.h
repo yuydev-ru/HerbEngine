@@ -21,8 +21,6 @@
 #define TYPE(x) std::type_index(typeid(x))
 #define MAX_COMPONENTS 32
 
-
-
 struct Storage;
 struct GameState;
 struct Component {};
@@ -31,7 +29,7 @@ typedef unsigned int Entity;
 typedef void (*System)(GameState *, Storage *, Entity);
 typedef Component *(*Deserializer)(Parser&);
 typedef std::bitset<MAX_COMPONENTS> Signature;
-//inputData inputArray;
+
 struct KeyData
 {
     std::string axis;
