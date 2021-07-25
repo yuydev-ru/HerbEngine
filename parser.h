@@ -68,7 +68,7 @@ struct Parser
     }
 
     unsigned int
-    size()
+    size() const
     {
         return this->data.size();
     }

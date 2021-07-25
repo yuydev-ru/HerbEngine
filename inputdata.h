@@ -121,7 +121,7 @@ struct inputData
     sf::Keyboard::Key
     stringToKeyboardKey(const std::string &key)
     {
-            return this->data[key];
+        return this->data[key];
     }
 };
 
