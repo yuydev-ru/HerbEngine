@@ -20,6 +20,8 @@ struct Sound : Component
     bool isLoaded = false;
 
     void play();
+    void pause();
+    void stop();
 
     static Component *
     deserialize(Parser &parser)
