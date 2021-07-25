@@ -23,18 +23,18 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
 
     //Input
 
-        // Opposite keys
+    // Opposite keys
     Parser opKeys(configPath,{"input","oppositeKeys"});
-    for (unsigned int i = 0; i < opKeys.size(); ++i)
+    for (int i = 0; i < opKeys.size(); ++i)
     {
-        std::string key1 = opKeys.parseObjectElement<std::string>(i,0);
-        std::string key2 = opKeys.parseObjectElement<std::string>(i, 1);
+        std::string key1 = opKeys.parseObjectElement<std::string>(i, 0);
+        std::string key2 = opKeys.parseObjectElement<std::string>(i,  1);
         config->oppositeKeys.insert(make_pair(key1,key2));
     }
 
         // Main keys
     Parser mainKeys(configPath,{"input","keys"});
-    for (unsigned int i = 0; i < mainKeys.size(); ++i)
+    for (int i = 0; i < mainKeys.size(); ++i)
     {
         std::string key = mainKeys.parseObjectElement<std::string>(i,0);
         std::string value = mainKeys.parseObjectElement<std::string>(i, 1);
@@ -43,25 +43,25 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
 
         // Axis data
     Parser axisKeys(configPath,{"input","axisData"});
-    for (unsigned int i = 0; i < axisKeys.size(); ++i)
+    for (int i = 0; i < axisKeys.size(); ++i)
     {
        KeyData data;
 
-       std::string key_tmp = axisKeys.parseObjectElement<std::string>(i,"key");
+       std::string key_tmp = axisKeys.parseObjectElement<std::string>(i, "key");
 
-       data.axis = axisKeys.parseObjectElement<std::string>(i,"axis");
-       data.axisType = axisKeys.parseObjectElement<std::string>(i,"axisType");
-       data.value = axisKeys.parseObjectElement<float>(i,"value");
+       data.axis = axisKeys.parseObjectElement<std::string>(i, "axis");
+       data.axisType = axisKeys.parseObjectElement<std::string>(i, "axisType");
+       data.value = axisKeys.parseObjectElement<float>(i, "value");
 
        config->axisData.insert(std::make_pair(config->keys[key_tmp],data));
     }
 
         // Axes
     Parser axes(configPath,{"input","axes"});
-    for (unsigned int i = 0; i < axes.size(); ++i)
+    for (int i = 0; i < axes.size(); ++i)
     {
-        std::string axis = axes.parseObjectElement<std::string>(i,0);
-        float value = axes.parseObjectElement<float>(i, 1);
+        std::string axis = axes.parseObjectElement<std::string>(i, 0);
+        auto value = axes.parseObjectElement<float>(i, 1);
         state->axes.insert(make_pair(axis,value));
     }
 
