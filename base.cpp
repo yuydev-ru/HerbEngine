@@ -2,7 +2,6 @@
 
 #include "base.h"
 #include "interface.h"
-#include "gui.h"
 #include "components.h"
 
 #include "parsing.h"

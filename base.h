@@ -71,7 +71,6 @@ struct GameState
 
 struct Storage
 {
-
     std::unordered_map<std::type_index, int> componentTypes;
     std::unordered_map<std::string, std::type_index> typeNames;
     std::unordered_map<std::string, Deserializer> deserializers;
