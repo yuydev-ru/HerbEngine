@@ -5,6 +5,8 @@
 #include "components.h"
 #include <unordered_map>
 
+#include "parser.h"
+#include "inputdata.h"
 #include <iostream>
 
 void
@@ -20,7 +22,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     config->defaultScene = file.parseElement<std::string>("scene", "default");
 
     Parser opKeys(configPath,{"input", "oppositeKeys"});
-    for (int i = 0; i < opKeys.size(); ++i)
+    for (int i = 0; i < (int) opKeys.size(); ++i)
     {
         std::string key1 = opKeys.parseObjectElement<std::string>(i, 0);
         std::string key2 = opKeys.parseObjectElement<std::string>(i,  1);
@@ -28,7 +30,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     }
 
     Parser mainKeys(configPath,{"input", "keys"});
-    for (int i = 0; i < mainKeys.size(); ++i)
+    for (int i = 0; i < (int) mainKeys.size(); ++i)
     {
         std::string key = mainKeys.parseObjectElement<std::string>(i,0);
         std::string value = mainKeys.parseObjectElement<std::string>(i, 1);
@@ -36,7 +38,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     }
 
     Parser axisKeys(configPath,{"input", "axisData"});
-    for (int i = 0; i < axisKeys.size(); ++i)
+    for (int i = 0; i < (int) axisKeys.size(); ++i)
     {
        KeyData data;
 
@@ -50,7 +52,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     }
 
     Parser axes(configPath,{"input","axes"});
-    for (int i = 0; i < axes.size(); ++i)
+    for (int i = 0; i < (int) axes.size(); ++i)
     {
         std::string axis = axes.parseObjectElement<std::string>(i, 0);
         auto value = axes.parseObjectElement<float>(i, 1);
@@ -128,7 +130,9 @@ internalRegisterComponents(GameState *state, Storage *storage)
     storage->registerComponent<Camera>("Camera");
     storage->registerComponent<Collider>("Collider");
     storage->registerComponent<Physics>("Physics");
+    storage->registerComponent<Sound>("Sound");
 
+    storage->registerSystem(setupSound,{TYPE(Sound)});
     storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
     storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
     storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
