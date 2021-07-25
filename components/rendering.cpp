@@ -12,7 +12,7 @@ render(GameState *state, Storage *storage, const Entity id)
     auto spr = storage->getComponent<Sprite>(id);
 
     sf::Vector2f screenPos = { (t->position.x - camPos.x) * camera->scale.x
-            , (camPos.y - t->position.y) * camera->scale.y };
+                             , (camPos.y - t->position.y) * camera->scale.y };
 
     screenPos += (sf::Vector2f) state->window->getSize() * 0.5f;
 
