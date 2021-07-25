@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENGINE_BASE_H
+#define ENGINE_BASE_H
 
 #include <SFML/Graphics.hpp>
 #include <logger/logger.h>
@@ -64,6 +65,7 @@ struct GameState
     Entity currentCamera;
     std::unordered_map<std::string, float> axes;
     std::map<sf::Keyboard::Key, bool> pushedKeys;
+    float deltaTime;
     logger::Logger* logger;
 };
 
@@ -213,3 +215,5 @@ struct Storage
         return (T*) this->entities[TYPE(T)][eid];
     }
 };
+
+#endif

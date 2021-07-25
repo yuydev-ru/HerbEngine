@@ -3,6 +3,8 @@
 #include "base.h"
 #include "interface.h"
 #include "gui.h"
+#include "components.h"
+
 #include "parsing.h"
 #include <iostream>
 
@@ -112,6 +114,21 @@ updateState(GameState *state, Storage *storage)
     }
 }
 
+void
+internalRegisterComponents(GameState *state, Storage *storage)
+{
+    storage->registerComponent<Transform>("Transform");
+    storage->registerComponent<Sprite>("Sprite");
+    storage->registerComponent<Camera>("Camera");
+    storage->registerComponent<Collider>("Collider");
+    storage->registerComponent<Physics>("Physics");
+
+    storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
+    storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
+    storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
+    storage->registerSystem(physics, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
+}
+
 int
 main()
 {
@@ -134,8 +151,12 @@ main()
     storage.logger = &logger;
     state.logger = &logger;
 
+    internalRegisterComponents(&state, &storage);
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
+
+    sf::Clock clock;
+    state.deltaTime = 0;
 
     std::unordered_map<std::string, std::string> imageStates = { {"normal", "assets/button/normal.png"}
                                                                , {"hovered", "assets/button/hovered.png"}
@@ -147,14 +168,6 @@ main()
     while (state.running)
     {
         sf::Event event {};
-
-        for (const auto& axis : config.axisData)
-        {
-            if (axis.second.axisType == "push")
-            {
-                state.axes[axis.second.axis] = 0;
-            }
-        }
 
         while (window.pollEvent(event))
         {
@@ -210,6 +223,7 @@ main()
                 if (pressedKeyData.axisType == "push")
                 {
                     state.pushedKeys[event.key.code] = false;
+                    state.axes[pressedKeyData.axis] = 0;
                 }
                 else if (pressedKeyData.axisType == "hold")
                 {
@@ -226,6 +240,7 @@ main()
         button.drawButton(window);
         title.drawText(window);
         window.display();
+        state.deltaTime = clock.restart().asSeconds();
     }
 
     return 0;
