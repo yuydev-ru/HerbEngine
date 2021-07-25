@@ -14,7 +14,7 @@ LIB_DIR = $(PREFIX)/lib
 BUILD_DIR = $(PREFIX)/build
 PACKAGE_DIR = $(PREFIX)/package
 
-all: base.o rendering.o physics.o sound.o
+all: base.o rendering.o physics.o
 
 base.o: base.h base.cpp interface.h
 	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c base.cpp -o $(BUILD_DIR)/base.o
@@ -24,9 +24,6 @@ rendering.o: components/rendering.cpp components/rendering.h
 
 physics.o: components/physics.cpp components/physics.h
 	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/physics.cpp -o $(BUILD_DIR)/physics.o
-
-sound.o: components/sound.cpp components/sound.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/sound.cpp -o $(BUILD_DIR)/sound.o
 
 clean:
 ifeq ($(OS),Windows_NT)
