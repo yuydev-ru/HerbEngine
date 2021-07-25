@@ -30,7 +30,7 @@ struct Parser
         auto it = list.begin();
         this->data = parser.data[*it];
 
-        for (it = list.begin()+1; it != list.end(); ++it)
+        for (it = list.begin() + 1; it != list.end(); ++it)
         {
             this->data = this->data[*it];
         }
