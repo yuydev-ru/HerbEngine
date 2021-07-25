@@ -13,18 +13,13 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     Parser file(configPath);
     inputData inputArray;
 
-    // Window
-    config->windowWidth = file.parseElement<int>("window","width");
-    config->windowHeight = file.parseElement<int>("window","height");
-    config->windowTitle = file.parseElement<std::string>("window","title");
+    config->windowWidth = file.parseElement<int>("window", "width");
+    config->windowHeight = file.parseElement<int>("window", "height");
+    config->windowTitle = file.parseElement<std::string>("window", "title");
 
-    // Scene
-    config->defaultScene = file.parseElement<std::string>("scene","default");
+    config->defaultScene = file.parseElement<std::string>("scene", "default");
 
-    //Input
-
-    // Opposite keys
-    Parser opKeys(configPath,{"input","oppositeKeys"});
+    Parser opKeys(configPath,{"input", "oppositeKeys"});
     for (int i = 0; i < opKeys.size(); ++i)
     {
         std::string key1 = opKeys.parseObjectElement<std::string>(i, 0);
@@ -32,8 +27,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
         config->oppositeKeys.insert(make_pair(key1,key2));
     }
 
-        // Main keys
-    Parser mainKeys(configPath,{"input","keys"});
+    Parser mainKeys(configPath,{"input", "keys"});
     for (int i = 0; i < mainKeys.size(); ++i)
     {
         std::string key = mainKeys.parseObjectElement<std::string>(i,0);
@@ -41,8 +35,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
         config->keys.insert(make_pair(key,inputArray.stringToKeyboardKey(value)));
     }
 
-        // Axis data
-    Parser axisKeys(configPath,{"input","axisData"});
+    Parser axisKeys(configPath,{"input", "axisData"});
     for (int i = 0; i < axisKeys.size(); ++i)
     {
        KeyData data;
@@ -56,7 +49,6 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
        config->axisData.insert(std::make_pair(config->keys[key_tmp],data));
     }
 
-        // Axes
     Parser axes(configPath,{"input","axes"});
     for (int i = 0; i < axes.size(); ++i)
     {
@@ -65,7 +57,6 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
         state->axes.insert(make_pair(axis,value));
     }
 
-        // Debug
     config->logLevel = static_cast<logger::LogLevel>(file.parseElement<int>("debug", "logLevel"));
 }
 
