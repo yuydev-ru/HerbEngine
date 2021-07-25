@@ -22,7 +22,8 @@ Text::~Text()
 }
 
 void
-Text::drawText(sf::RenderWindow &window) {
+Text::drawText(sf::RenderWindow &window)
+{
     text.setPosition(pos);
     window.draw(text);
 }
@@ -47,15 +48,16 @@ Button::Button( const sf::Vector2f &pos, const std::unordered_map<std::string, s
     this->buttonText.setStyle(sf::Text::Regular);
     this->buttonText.setPosition(50.f, 50.f);
 
-    this->states = {{"after_click", false},
-                    {"hovered",     false},
-                    {"clicked",     false}};
+    this->states = { {"after_click", false}
+                   , {"hovered",     false}
+                   , {"clicked",     false} };
 }
 
 Button::~Button()
 {
     delete font;
 }
+
 void
 Button::drawButton(sf::RenderWindow &window) {
     if (states["clicked"]) {
@@ -79,18 +81,26 @@ Button::drawButton(sf::RenderWindow &window) {
 }
 
 void
-Button::updateButton(sf::RenderWindow &window, sf::Event &event) {
+Button::updateButton(sf::RenderWindow &window, sf::Event &event)
+{
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     states["hovered"] = sprite.getGlobalBounds().contains(mousePos);
-    if (event.type == sf::Event::MouseButtonPressed) {
-        if (event.mouseButton.button == sf::Mouse::Left) {
-            if (states["hovered"]) {
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        if (event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (states["hovered"])
+            {
                 states["clicked"] = true;
             }
         }
-    } else if (event.type == sf::Event::MouseButtonReleased) {
-        if (event.mouseButton.button == sf::Mouse::Left) {
-            if (states["hovered"] && states["after_click"]) {
+    }
+    else if (event.type == sf::Event::MouseButtonReleased)
+    {
+        if (event.mouseButton.button == sf::Mouse::Left)
+        {
+            if (states["hovered"] && states["after_click"])
+            {
                 states["after_click"] = false;
                 func();
             }

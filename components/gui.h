@@ -6,11 +6,13 @@
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
 
-class Widget {
+class Widget
+{
     // https://stackoverflow.com/questions/26208918/vector-that-can-have-3-different-data-types-c
 };
 
-class Text : Widget {
+class Text : Widget
+{
 public:
     Text( const sf::Vector2f &, const std::string &, unsigned = 14, sf::Color = sf::Color::White
         , const std::string& = "assets/fonts/Neucha-Regular.ttf" );
@@ -26,7 +28,8 @@ private:
 };
 
 
-class Button : Widget {
+class Button : Widget
+{
 public:
     Button( const sf::Vector2f&, const std::unordered_map<std::string, std::string>&, const std::string&
           , const std::string&, sf::Color, unsigned, void() );
@@ -46,7 +49,8 @@ private:
 };
 
 static void
-func() {
+func()
+{
     puts("Click!");
 }
 
