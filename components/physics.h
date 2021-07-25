@@ -2,6 +2,7 @@
 #define ENGINE_PHYSICS_H
 
 #include "transform.h"
+#include "../parser.h"
 #include <SFML/Graphics.hpp>
 
 struct Collider : Component
@@ -19,14 +20,14 @@ struct Collider : Component
     sf::Vector2f normal = {0, 0};
 
     static Component *
-    deserialize(Parsing::configFile &dict)
+    deserialize(Parser &parser)
     {
         auto c = new Collider;
 
-        c->deltaCenter = Parsing::parseVector2<float>(dict, "deltaCenter");
-        c->allowCollision = Parsing::parseElement<bool>(dict, "allowCollision");
-        c->width = Parsing::parseElement<float>(dict, "width");
-        c->height = Parsing::parseElement<float>(dict, "height");
+        c->deltaCenter = parser.parseVector2<float>("deltaCenter");
+        c->allowCollision = parser.parseElement<bool>("allowCollision");
+        c->width = parser.parseElement<float>("width");
+        c->height = parser.parseElement<float>("height");
 
         return c;
     }
@@ -50,13 +51,12 @@ struct Physics : Component
     void evalResForce();
 
     static Component *
-    deserialize(Parsing::configFile &dict)
+    deserialize(Parser &parser)
     {
         auto p = new Physics;
-
-        p->mass = Parsing::parseElement<float>(dict, "mass");
-        p->allowGravity = Parsing::parseElement<bool>(dict, "allowGravity");
-        p->activeAxes = Parsing::parseVector2<float>(dict, "activeAxes");
+        p->mass = parser.parseElement<float>("mass");
+        p->allowGravity = parser.parseElement<bool>("allowGravity");
+        p->activeAxes = parser.parseVector2<float>("activeAxes");
 
         return p;
     }
