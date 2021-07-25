@@ -27,6 +27,7 @@ physics.o: components/physics.cpp components/physics.h
 
 sound.o: components/sound.cpp components/sound.h
 	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/sound.cpp -o $(BUILD_DIR)/sound.o
+
 clean:
 ifeq ($(OS),Windows_NT)
 	del /q "$(BUILD_DIR)\*"

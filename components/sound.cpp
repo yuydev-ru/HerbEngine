@@ -8,6 +8,7 @@ Sound::play()
         this->sound.play();
     }
 }
+
 void
 setupSound(GameState *state, Storage *storage, const Entity id)
 {

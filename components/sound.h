@@ -2,7 +2,7 @@
 #define ENGINE_SOUND_H
 
 #include "../base.h"
-#include "../parsing.h"
+#include "../parser.h"
 #include <SFML/Audio.hpp>
 
 struct Sound : Component
@@ -22,14 +22,14 @@ struct Sound : Component
     void play();
 
     static Component *
-    deserialize(Parsing::configFile &dict)
+    deserialize(Parser &parser)
     {
         auto s = new Sound;
-        s->name = Parsing::parseElement<std::string>(dict,"name");
-        s->assetPath = Parsing::parseElement<std::string>(dict,"assetPath");
-        s->volume =  Parsing::parseElement<float>(dict,"volume");
-        s->isLooped = Parsing::parseElement<bool>(dict,"isLooped");
-        s->playOnStart = Parsing::parseElement<bool>(dict,"playOnStart");
+        s->name = parser.parseElement<std::string>("name");
+        s->assetPath = parser.parseElement<std::string>("assetPath");
+        s->volume =  parser.parseElement<float>("volume");
+        s->isLooped = parser.parseElement<bool>("isLooped");
+        s->playOnStart = parser.parseElement<bool>("playOnStart");
 
         if (s->buffer.loadFromFile(s->assetPath))
         {
