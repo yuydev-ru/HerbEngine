@@ -2,6 +2,21 @@
 #include "transform.h"
 
 void
+AnimationController::setAnimation(const std::string &name)
+{
+    for (auto anim : this->animations)
+    {
+        if (anim->name == name)
+        {
+            this->currentAnimation = anim;
+            this->currentFrame = 0;
+            this->timeout = 0;
+            break;
+        }
+    }
+}
+
+void
 render(GameState *state, Storage *storage, const Entity id)
 {
     auto camera = storage->getComponent<Camera>(state->currentCamera);

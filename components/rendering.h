@@ -70,6 +70,9 @@ struct AnimationController : Component
     int currentFrame = 0;
     float timeout = 0.0f;
 
+    void
+    setAnimation(const std::string &name);
+
     static Component *
     deserialize(Parser &parser)
     {
@@ -97,8 +100,8 @@ struct AnimationController : Component
                                           (int) anim->image.getSize().y / anim->gridSize.y};
 
             int nFrames = 0;
-            for (int i = 0; i < anim->gridSize.x && nFrames <= anim->numberOfFrames; i++) {
-                for (int j = 0; j < anim->gridSize.y && nFrames <= anim->numberOfFrames; j++) {
+            for (int j = 0; j < anim->gridSize.y && nFrames <= anim->numberOfFrames; j++) {
+                for (int i = 0; i < anim->gridSize.x && nFrames <= anim->numberOfFrames; i++) {
                     sf::IntRect rect = {i * frameSize.x, j * frameSize.y, frameSize.x, frameSize.y};
                     anim->frames.push_back(rect);
                     nFrames++;
@@ -109,14 +112,7 @@ struct AnimationController : Component
         }
 
         auto defaultAnimation = parser.parseElement<std::string>("defaultAnimation");
-        for (auto anim : controller->animations)
-        {
-            if (anim->name == defaultAnimation)
-            {
-                controller->currentAnimation = anim;
-                break;
-            }
-        }
+        controller->setAnimation(defaultAnimation);
 
         return controller;
     }
