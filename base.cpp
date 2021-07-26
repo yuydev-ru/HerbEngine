@@ -66,7 +66,7 @@ Entity
 loadEntity(Parser &components, GameState *state, Storage *storage)
 {
     Entity entity = storage->createEntity();
-    for (components.iterator = components.data.begin(); components.iterator  != components.data.end(); ++components.iterator)
+    for (components.iterator = components.data.begin(); components.iterator != components.data.end(); ++components.iterator)
     {
         Parser component(*components.iterator);
         std::string name = component.parseElement<std::string>("type");
@@ -131,11 +131,11 @@ internalRegisterComponents(GameState *state, Storage *storage)
     storage->registerComponent<Collider>("Collider");
     storage->registerComponent<Physics>("Physics");
     storage->registerComponent<Sound>("Sound");
-    storage->registerComponent<Animation>("Animation");
+    storage->registerComponent<AnimationController>("AnimationController");
 
     storage->registerSystem(setupSound,{TYPE(Sound)});
     storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
-    storage->registerSystem(updateAnimation, {TYPE(Sprite), TYPE(Animation)});
+    storage->registerSystem(updateAnimation, {TYPE(Sprite), TYPE(AnimationController)});
     storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
     storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
     storage->registerSystem(physics, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});

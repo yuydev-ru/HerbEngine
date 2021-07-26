@@ -35,15 +35,14 @@ void
 updateAnimation(GameState *state, Storage *storage, const Entity id)
 {
     auto spr = storage->getComponent<Sprite>(id);
-    auto animation = storage->getComponent<Animation>(id);
+    auto controller = storage->getComponent<AnimationController>(id);
 
-    animation->t -= state->deltaTime;
-    if (animation->t > 0) return;
+    controller->timeout -= state->deltaTime;
+    if (controller->timeout > 0) return;
 
-    spr->sprite = animation->sprite;
-    spr->sprite.setTexture(animation->texture);
-    spr->sprite.setTextureRect(animation->frames.at(animation->currentFrame));
+    spr->sprite = controller->currentAnimation->sprite;
+    spr->sprite.setTextureRect(controller->currentAnimation->frames.at(controller->currentFrame));
 
-    animation->currentFrame = (animation->currentFrame + 1) % animation->numberOfFrames;
-    animation->t = animation->timeout;
+    controller->currentFrame = (controller->currentFrame + 1) % controller->currentAnimation->numberOfFrames;
+    controller->timeout = controller->currentAnimation->timeout;
 }

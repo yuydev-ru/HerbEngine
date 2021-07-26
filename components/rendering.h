@@ -48,52 +48,77 @@ struct Camera : Component
     }
 };
 
-struct Animation : Component
+struct Animation
 {
+    std::string name;
     std::string assetPath;
     sf::Vector2<int> gridSize;
     int numberOfFrames = 0;
+    float timeout = 0;
 
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite;
-
     std::vector<sf::IntRect> frames;
-    int currentFrame = 0;
+};
 
-    float t = 0.0f;
+struct AnimationController : Component
+{
+    std::vector<Animation *> animations;
+
+    Animation *currentAnimation {};
+    int currentFrame = 0;
     float timeout = 0.0f;
 
     static Component *
     deserialize(Parser &parser)
     {
-        auto anim = new Animation;
+        auto controller = new AnimationController;
 
-        anim->assetPath = parser.parseElement<std::string>("assetPath");
-        anim->gridSize = parser.parseVector2<int>("gridSize");
-        anim->numberOfFrames = parser.parseElement<int>("numberOfFrames");
-        auto fps = parser.parseElement<float>("fps");
-        anim->timeout = 1.0f / fps;
+        // TODO(andrew): Сделать нормальную итерацию по парсеру.
+        auto outerAnimParser = Parser(parser.data["animations"]);
+        for (outerAnimParser.iterator = outerAnimParser.data.begin(); outerAnimParser.iterator != outerAnimParser.data.end(); ++outerAnimParser.iterator) {
+            auto animParser = Parser(*outerAnimParser.iterator);
 
-        anim->image.loadFromFile(anim->assetPath);
-        anim->texture.loadFromImage(anim->image);
-        anim->sprite.setTexture(anim->texture);
+            // TODO(andrew): Найти способ делать move в вектор, вместо хранения указателей.
+            auto anim = new Animation;
+            anim->name = animParser.parseElement<std::string>("name");
+            anim->assetPath = animParser.parseElement<std::string>("assetPath");
+            anim->gridSize = animParser.parseVector2<int>("gridSize");
+            anim->numberOfFrames = animParser.parseElement<int>("numberOfFrames");
+            auto fps = animParser.parseElement<float>("fps");
+            anim->timeout = 1.0f / fps;
 
-        sf::Vector2<int> frameSize = { (int) anim->image.getSize().x / anim->gridSize.x
-                                     , (int) anim->image.getSize().y / anim->gridSize.y };
+            anim->image.loadFromFile(anim->assetPath);
+            anim->texture.loadFromImage(anim->image);
+            anim->sprite.setTexture(anim->texture);
 
-        int nFrames = 0;
-        for (int i = 0; i < anim->gridSize.x && nFrames <= anim->numberOfFrames; i++)
+            sf::Vector2<int> frameSize = {(int) anim->image.getSize().x / anim->gridSize.x,
+                                          (int) anim->image.getSize().y / anim->gridSize.y};
+
+            int nFrames = 0;
+            for (int i = 0; i < anim->gridSize.x && nFrames <= anim->numberOfFrames; i++) {
+                for (int j = 0; j < anim->gridSize.y && nFrames <= anim->numberOfFrames; j++) {
+                    sf::IntRect rect = {i * frameSize.x, j * frameSize.y, frameSize.x, frameSize.y};
+                    anim->frames.push_back(rect);
+                    nFrames++;
+                }
+            }
+
+            controller->animations.push_back(anim);
+        }
+
+        auto defaultAnimation = parser.parseElement<std::string>("defaultAnimation");
+        for (auto anim : controller->animations)
         {
-            for (int j = 0; j < anim->gridSize.y && nFrames <= anim->numberOfFrames; j++)
+            if (anim->name == defaultAnimation)
             {
-                sf::IntRect rect = {i * frameSize.x, j * frameSize.y, frameSize.x, frameSize.y};
-                anim->frames.push_back(rect);
-                nFrames++;
+                controller->currentAnimation = anim;
+                break;
             }
         }
 
-        return anim;
+        return controller;
     }
 };
 
