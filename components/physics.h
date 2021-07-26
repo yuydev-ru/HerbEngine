@@ -38,7 +38,7 @@ struct Physics : Component
     sf::Vector2f speed = {0, 0};
     sf::Vector2f position = {0, 0};
     sf::Vector2f activeAxes = {1, 1};
-    const float gravityAcceleration = 500;
+    const float gravityAcceleration = 1300;
     float mass = 1;
 
     bool allowGravity = true;
