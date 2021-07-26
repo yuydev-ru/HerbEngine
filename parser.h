@@ -37,34 +37,40 @@ struct Parser
     }
 
     template <class T> T
-    parseElement(const std::string &key)
+    parseElement(const std::string &key) const
     {
         return this->data.find(key)->get<T>();
     }
 
     template<class T> T
-    parseElement(const std::string &key, const std::string &subkey)
+    parseElement(const std::string &key, const std::string &subkey) const
     {
         return this->data.find(key)->find(subkey)->get<T>();
     }
 
     template<class T> T
-    parseObjectElement(int index, const std::string &key)
+    parseObjectElement(int index, const std::string &key) const
     {
         return this->data[index].at(key);
     }
 
     template<class T> T
-    parseObjectElement(int index, int key)
+    parseObjectElement(int index, int key) const
     {
         return this->data[index].at(key);
     }
 
     template<class T> sf::Vector2 <T>
-    parseVector2(const std::string &key)
+    parseVector2(const std::string &key) const
     {
         auto buf = this->data.find(key)->get<std::vector<T>>();
         return { buf[0], buf[1] };
+    }
+
+    bool
+    isNull(const std::string &key) const
+    {
+        return this->data.find(key)->is_null();
     }
 
     unsigned int
