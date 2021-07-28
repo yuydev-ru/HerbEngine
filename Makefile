@@ -1,35 +1,32 @@
 .PHONY: clean
 
-CC=g++
-CFLAGS=-Wall -Wpedantic -ggdb -std=c++11
+CXX=g++
+CXXFLAGS=-Wall -Wpedantic -ggdb -std=c++11
 ifneq ($(OS),Windows_NT)
 	ifeq ($(shell uname), Darwin)
-		override CFLAGS += -arch x86_64
+		override CXXFLAGS += -arch x86_64
 	endif
 endif
 PREFIX ?= .
 
 INCLUDE_DIR = $(PREFIX)/include
-LIB_DIR = $(PREFIX)/lib
 BUILD_DIR = $(PREFIX)/build
-PACKAGE_DIR = $(PREFIX)/package
 
-all: base.o rendering.o physics.o sound.o gui.o
+SOURCES := $(wildcard components/*.cpp)
+OBJECTS := $(patsubst components/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
+DEPENDS := $(patsubst components/%.cpp,$(BUILD_DIR)/%.d,$(SOURCES))
+OBJECTS += $(BUILD_DIR)/base.o
+DEPENDS += $(BUILD_DIR)/base.d
 
-base.o: base.h base.cpp interface.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c base.cpp -o $(BUILD_DIR)/base.o
+all: $(OBJECTS)
 
-rendering.o: components/rendering.cpp components/rendering.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/rendering.cpp -o $(BUILD_DIR)/rendering.o
+-include $(DEPENDS)
 
-physics.o: components/physics.cpp components/physics.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/physics.cpp -o $(BUILD_DIR)/physics.o
+$(BUILD_DIR)/base.o: base.cpp Makefile
+	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -MMD -MP -c $< -o $@
 
-gui.o: components/gui.cpp components/gui.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/gui.cpp -o $(BUILD_DIR)/gui.o
-
-sound.o: components/sound.cpp components/sound.h
-	$(CC) $(CFLAGS) -I./$(INCLUDE_DIR) -c components/sound.cpp -o $(BUILD_DIR)/sound.o
+$(BUILD_DIR)/%.o: components/%.cpp Makefile
+	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -MMD -MP -c $< -o $@
 
 clean:
 ifeq ($(OS),Windows_NT)
