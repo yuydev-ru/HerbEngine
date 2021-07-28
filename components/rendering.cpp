@@ -38,10 +38,21 @@ renderGui(GameState *state, Storage *storage, Entity id)
         widget->draw(*state->window);
     }
 }
+
 void
 updateGui(GameState *state, Storage *storage, sf::Event& event)
 {
-    for (auto const &widget : storage->getComponent<Gui>(0)->widgets)
+    // TODO(michael): Добавить проверку, что guiId нашёлся
+    Entity guiId;
+    for (auto const &id : storage->usedIds)
+    {
+        if (storage->getComponent<Gui>(id) != nullptr)
+        {
+            guiId = id;
+        }
+    }
+
+    for (auto const &widget : storage->getComponent<Gui>(guiId)->widgets)
     {
         widget->update(*state->window, event);
     }
