@@ -8,17 +8,19 @@
 
 class Widget
 {
-    // https://stackoverflow.com/questions/26208918/vector-that-can-have-3-different-data-types-c
+public:
+    virtual void draw(sf::RenderWindow&){}
+    virtual void update(sf::RenderWindow&, sf::Event&){}
 };
 
-class Text : Widget
+class Text : public Widget
 {
 public:
     Text( const sf::Vector2f &, const std::string &, unsigned = 14, sf::Color = sf::Color::White
         , const std::string& = "assets/fonts/Neucha-Regular.ttf" );
     ~Text();
 
-    void drawText(sf::RenderWindow&);
+    void draw(sf::RenderWindow&) override;
 
 private:
     sf::Text text;
@@ -27,16 +29,16 @@ private:
     sf::FloatRect textRect;
 };
 
-
-class Button : Widget
+class Button : public Widget
 {
 public:
-    Button( const sf::Vector2f&, const std::unordered_map<std::string, std::string>&, const std::string&
-          , const std::string&, sf::Color, unsigned, void() );
+    Button( const std::string&, const sf::Vector2f&, const std::unordered_map<std::string, std::string>&
+          , const std::string& = "", unsigned = 14, sf::Color = sf::Color::White
+          , const std::string& = "assets/fonts/Neucha-Regular.ttf" );
     ~Button();
 
-    void drawButton(sf::RenderWindow&);
-    void updateButton(sf::RenderWindow&, sf::Event&);
+    void draw(sf::RenderWindow&) override;
+    void update(sf::RenderWindow&, sf::Event&) override;
 
 private:
     sf::Texture normalBtn, hoveredBtn, clickedBtn;
@@ -45,13 +47,7 @@ private:
     sf::Vector2f pos;
     sf::Text buttonText;
     std::unordered_map<std::string, bool> states;
-    void (*func)();
+    std::string func;
 };
-
-static void
-func()
-{
-    puts("Click!");
-}
 
 #endif

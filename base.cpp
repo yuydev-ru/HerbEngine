@@ -9,6 +9,8 @@
 #include "inputdata.h"
 #include <iostream>
 
+#include "components/rendering.h"
+
 void
 loadConfig(GameState *state, const std::string& configPath, Config *config)
 {
@@ -128,15 +130,23 @@ internalRegisterComponents(GameState *state, Storage *storage)
     storage->registerComponent<Transform>("Transform");
     storage->registerComponent<Sprite>("Sprite");
     storage->registerComponent<Camera>("Camera");
+    storage->registerComponent<Gui>("Gui");
     storage->registerComponent<Collider>("Collider");
     storage->registerComponent<Physics>("Physics");
     storage->registerComponent<Sound>("Sound");
 
     storage->registerSystem(setupSound,{TYPE(Sound)});
     storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
+    storage->registerSystem(renderGui, {TYPE(Gui)});
     storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
     storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
     storage->registerSystem(physics, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
+}
+
+void
+button_action()
+{
+    puts("Click!");
 }
 
 int
@@ -168,12 +178,7 @@ main()
     sf::Clock clock;
     state.deltaTime = 0;
 
-    std::unordered_map<std::string, std::string> imageStates = { {"normal", "assets/button/normal.png"}
-                                                               , {"hovered", "assets/button/hovered.png"}
-                                                               , {"clicked", "assets/button/clicked.png"} };
-    Button button( sf::Vector2f(100, 100), imageStates, "PLAY", "assets/fonts/Neucha-Regular.ttf"
-                 , sf::Color::White, 14, func );
-    Text title(sf::Vector2f(float(window.getSize().x) / 2.f, 150.f), "Titled game", 48);
+//    Text title(sf::Vector2f(float(window.getSize().x) / 2.f, 150.f), "Titled game", 48);
 
     while (state.running)
     {
@@ -241,15 +246,13 @@ main()
                         (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
                 }
             }
-            button.updateButton(window, event);
+            updateGui(&state, &storage, event);
         }
 
         window.clear();
-
         updateState(&state, &storage);
-        button.drawButton(window);
-        title.drawText(window);
         window.display();
+
         state.deltaTime = clock.restart().asSeconds();
     }
 

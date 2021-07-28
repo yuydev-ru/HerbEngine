@@ -29,3 +29,20 @@ render(GameState *state, Storage *storage, const Entity id)
     spr->sprite.setScale(screenScale);
     state->window->draw(spr->sprite);
 }
+
+void
+renderGui(GameState *state, Storage *storage, Entity id)
+{
+    for (auto const &widget : storage->getComponent<Gui>(id)->widgets)
+    {
+        widget->draw(*state->window);
+    }
+}
+void
+updateGui(GameState *state, Storage *storage, sf::Event& event)
+{
+    for (auto const &widget : storage->getComponent<Gui>(0)->widgets)
+    {
+        widget->update(*state->window, event);
+    }
+}
