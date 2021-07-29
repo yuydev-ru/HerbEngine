@@ -33,7 +33,7 @@ class Button : public Widget
 {
 public:
     Button( const std::string&, const sf::Vector2f&, const std::unordered_map<std::string, std::string>&
-          , const std::string& = "", unsigned = 14, sf::Color = sf::Color::White
+          , const std::string& = "", unsigned = 14, const std::vector<int>& = {255, 255, 255, 255}
           , const std::string& = "assets/fonts/Neucha-Regular.ttf" );
     ~Button();
 

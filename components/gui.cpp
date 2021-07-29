@@ -29,7 +29,7 @@ Text::draw(sf::RenderWindow &window)
 }
 
 Button::Button( const std::string& func, const sf::Vector2f &pos, const std::unordered_map<std::string, std::string> &imageStates
-              , const std::string &text, unsigned textSize, const sf::Color fillColor, const std::string &fontPath ) {
+              , const std::string &text, unsigned textSize, const std::vector<int>& fillColor, const std::string &fontPath ) {
     this->normalBtn.loadFromFile(imageStates.at("normal"));
     this->hoveredBtn.loadFromFile(imageStates.at("hovered"));
     this->clickedBtn.loadFromFile(imageStates.at("clicked"));
@@ -42,7 +42,7 @@ Button::Button( const std::string& func, const sf::Vector2f &pos, const std::uno
     this->buttonText.setFont(*font);
 
     this->buttonText.setString(text);
-    this->buttonText.setFillColor(fillColor);
+    this->buttonText.setFillColor(sf::Color(fillColor[0], fillColor[1], fillColor[2], fillColor[3]));
     this->buttonText.setCharacterSize(textSize);
     this->buttonText.setStyle(sf::Text::Regular);
     this->buttonText.setPosition(50.f, 50.f);

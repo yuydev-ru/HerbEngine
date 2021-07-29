@@ -36,6 +36,12 @@ struct Parser
         }
     }
 
+    template <class T> bool
+    checkElement(const std::string &key)
+    {
+        return this->data.find(key) != this->data.end();
+    }
+
     template <class T> T
     parseElement(const std::string &key)
     {

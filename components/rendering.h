@@ -63,7 +63,18 @@ struct Gui : Component
             {
                 auto func = widgetParser.parseElement<std::string>("func");
                 auto pos = widgetParser.parseVector2<float>("position");
-                auto text = widgetParser.parseElement<std::string>("text");
+                auto text = ( widgetParser.checkElement<std::string>("text")
+                            ? widgetParser.parseElement<std::string>("text")
+                            : "" );
+                auto textSize = ( widgetParser.checkElement<int>("textSize")
+                                ? widgetParser.parseElement<int>("textSize")
+                                : 14 );
+                auto textColor = ( widgetParser.checkElement<std::vector<int>>("textColor")
+                                 ? widgetParser.parseElement<std::vector<int>>("textColor")
+                                 : std::vector<int>(4, 255) );
+                auto fontPath = ( widgetParser.checkElement<std::string>("fontPath")
+                                ? widgetParser.parseElement<std::string>("fontPath")
+                                : "assets/fonts/Neucha-Regular.ttf" );
                 std::unordered_map<std::string, std::string> imageStates;
                 for ( widgetParser.iterator = widgetParser.data["imageStates"].begin()
                     ; widgetParser.iterator != widgetParser.data["imageStates"].end()
@@ -72,8 +83,7 @@ struct Gui : Component
                     Parser imageStatesParser(*widgetParser.iterator);
                     imageStates.insert(std::make_pair(*imageStatesParser.data.begin(), *(imageStatesParser.data.rbegin())));
                 }
-
-                auto *button = new Button(func, pos, imageStates, text);
+                auto *button = new Button(func, pos, imageStates, text, textSize, textColor, fontPath);
                 g->widgets.push_back(button);
             }
         }
