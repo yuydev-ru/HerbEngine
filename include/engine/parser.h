@@ -1,10 +1,14 @@
 #ifndef ENGINE_PARSER_H
 #define ENGINE_PARSER_H
 
+#include <glm/vec2.hpp>
+
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
+
+namespace herb {
 
 struct Parser
 {
@@ -60,10 +64,10 @@ struct Parser
         return this->data[index].at(key);
     }
 
-    template<class T> sf::Vector2 <T>
+    glm::vec2
     parseVector2(const std::string &key)
     {
-        auto buf = this->data.find(key)->get<std::vector<T>>();
+        auto buf = this->data.find(key)->get<std::vector<float>>();
         return { buf[0], buf[1] };
     }
 
@@ -73,5 +77,7 @@ struct Parser
         return this->data.size();
     }
 };
+
+} // namespace herb
 
 #endif

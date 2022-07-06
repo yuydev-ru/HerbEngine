@@ -1,128 +1,125 @@
 #ifndef ENGINE_INPUTDATA_H
 #define ENGINE_INPUTDATA_H
 
-#include<string>
-#include<unordered_map>
-#include<SFML/Window.hpp>
+#include <string>
+#include <unordered_map>
+#include <raylib.h>
 
-struct inputData
-{
-    std::unordered_map<std::string, sf::Keyboard::Key> data;
+#define KEYDATA(input_key) { #input_key, KEY_##input_key }
+static std::unordered_map<std::string, KeyboardKey> stringToKeyboardKey = {
+    KEYDATA(NULL),
+    KEYDATA(A),
+    KEYDATA(B),
+    KEYDATA(C),
+    KEYDATA(D),
+    KEYDATA(E),
+    KEYDATA(F),
+    KEYDATA(G),
+    KEYDATA(H),
+    KEYDATA(I),
+    KEYDATA(J),
+    KEYDATA(K),
+    KEYDATA(L),
+    KEYDATA(M),
+    KEYDATA(N),
+    KEYDATA(O),
+    KEYDATA(P),
+    KEYDATA(Q),
+    KEYDATA(R),
+    KEYDATA(S),
+    KEYDATA(T),
+    KEYDATA(U),
+    KEYDATA(V),
+    KEYDATA(W),
+    KEYDATA(X),
+    KEYDATA(Y),
+    KEYDATA(Z),
 
-#define INSERT_KEYDATA(input_key) this->data.insert(std::make_pair(#input_key, sf::Keyboard::input_key));
-    inputData()
-    {
-        // Keyboard
-        INSERT_KEYDATA(Unknown);
-        INSERT_KEYDATA(A);
-        INSERT_KEYDATA(B);
-        INSERT_KEYDATA(C);
-        INSERT_KEYDATA(D);
-        INSERT_KEYDATA(E);
-        INSERT_KEYDATA(F);
-        INSERT_KEYDATA(G);
-        INSERT_KEYDATA(H);
-        INSERT_KEYDATA(I);
-        INSERT_KEYDATA(J);
-        INSERT_KEYDATA(K);
-        INSERT_KEYDATA(L);
-        INSERT_KEYDATA(M);
-        INSERT_KEYDATA(N);
-        INSERT_KEYDATA(O);
-        INSERT_KEYDATA(P);
-        INSERT_KEYDATA(Q);
-        INSERT_KEYDATA(R);
-        INSERT_KEYDATA(S);
-        INSERT_KEYDATA(T);
-        INSERT_KEYDATA(U);
-        INSERT_KEYDATA(V);
-        INSERT_KEYDATA(W);
-        INSERT_KEYDATA(X);
-        INSERT_KEYDATA(Y);
-        INSERT_KEYDATA(Z);
-        INSERT_KEYDATA(Num0);
-        INSERT_KEYDATA(Num1);
-        INSERT_KEYDATA(Num2);
-        INSERT_KEYDATA(Num3);
-        INSERT_KEYDATA(Num4);
-        INSERT_KEYDATA(Num5);
-        INSERT_KEYDATA(Num6);
-        INSERT_KEYDATA(Num7);
-        INSERT_KEYDATA(Num8);
-        INSERT_KEYDATA(Num9);
-        INSERT_KEYDATA(Escape);
-        INSERT_KEYDATA(LControl);
-        INSERT_KEYDATA(LShift);
-        INSERT_KEYDATA(LAlt);
-        INSERT_KEYDATA(LSystem);
-        INSERT_KEYDATA(RControl);
-        INSERT_KEYDATA(RShift);
-        INSERT_KEYDATA(RAlt);
-        INSERT_KEYDATA(RSystem);
-        INSERT_KEYDATA(Menu);
-        INSERT_KEYDATA(LBracket);
-        INSERT_KEYDATA(RBracket);
-        INSERT_KEYDATA(SemiColon);
-        INSERT_KEYDATA(Comma);
-        INSERT_KEYDATA(Period);
-        INSERT_KEYDATA(Quote);
-        INSERT_KEYDATA(Slash);
-        INSERT_KEYDATA(BackSlash);
-        INSERT_KEYDATA(Tilde);
-        INSERT_KEYDATA(Equal);
-        INSERT_KEYDATA(Dash);
-        INSERT_KEYDATA(Space);
-        INSERT_KEYDATA(Return);
-        INSERT_KEYDATA(BackSpace);
-        INSERT_KEYDATA(Tab);
-        INSERT_KEYDATA(PageUp);
-        INSERT_KEYDATA(PageDown);
-        INSERT_KEYDATA(End);
-        INSERT_KEYDATA(Home);
-        INSERT_KEYDATA(Insert);
-        INSERT_KEYDATA(Delete);
-        INSERT_KEYDATA(Add);
-        INSERT_KEYDATA(Subtract);
-        INSERT_KEYDATA(Multiply);
-        INSERT_KEYDATA(Divide);
-        INSERT_KEYDATA(Left);
-        INSERT_KEYDATA(Right);
-        INSERT_KEYDATA(Up);
-        INSERT_KEYDATA(Down);
-        INSERT_KEYDATA(Numpad0);
-        INSERT_KEYDATA(Numpad1);
-        INSERT_KEYDATA(Numpad2);
-        INSERT_KEYDATA(Numpad3);
-        INSERT_KEYDATA(Numpad4);
-        INSERT_KEYDATA(Numpad5);
-        INSERT_KEYDATA(Numpad6);
-        INSERT_KEYDATA(Numpad7);
-        INSERT_KEYDATA(Numpad8);
-        INSERT_KEYDATA(Numpad9);
-        INSERT_KEYDATA(F1);
-        INSERT_KEYDATA(F2);
-        INSERT_KEYDATA(F3);
-        INSERT_KEYDATA(F4);
-        INSERT_KEYDATA(F5);
-        INSERT_KEYDATA(F6);
-        INSERT_KEYDATA(F7);
-        INSERT_KEYDATA(F8);
-        INSERT_KEYDATA(F9);
-        INSERT_KEYDATA(F10);
-        INSERT_KEYDATA(F11);
-        INSERT_KEYDATA(F12);
-        INSERT_KEYDATA(F13);
-        INSERT_KEYDATA(F14);
-        INSERT_KEYDATA(F15);
-        INSERT_KEYDATA(Pause)
-    }
-#undef INSERT_KEYDATA
+    KEYDATA(ZERO),
+    KEYDATA(ONE),
+    KEYDATA(TWO),
+    KEYDATA(THREE),
+    KEYDATA(FOUR),
+    KEYDATA(FIVE),
+    KEYDATA(SIX),
+    KEYDATA(SEVEN),
+    KEYDATA(EIGHT),
+    KEYDATA(NINE),
 
-    sf::Keyboard::Key
-    stringToKeyboardKey(const std::string &key)
-    {
-        return this->data[key];
-    }
+    KEYDATA(PAUSE),
+    KEYDATA(ESCAPE),
+
+    KEYDATA(LEFT_CONTROL),
+    KEYDATA(LEFT_SHIFT),
+    KEYDATA(LEFT_ALT),
+    KEYDATA(LEFT_SUPER),
+
+    KEYDATA(RIGHT_CONTROL),
+    KEYDATA(RIGHT_SHIFT),
+    KEYDATA(RIGHT_ALT),
+    KEYDATA(RIGHT_SUPER),
+
+    KEYDATA(KB_MENU),
+
+    KEYDATA(LEFT_BRACKET),
+    KEYDATA(RIGHT_BRACKET),
+    KEYDATA(SEMICOLON),
+    KEYDATA(COMMA),
+    KEYDATA(PERIOD),
+    KEYDATA(APOSTROPHE),
+    KEYDATA(SLASH),
+    KEYDATA(BACKSLASH),
+
+    KEYDATA(MINUS),
+
+    KEYDATA(SPACE),
+    KEYDATA(BACKSPACE),
+    KEYDATA(TAB),
+    KEYDATA(PAGE_UP),
+    KEYDATA(PAGE_DOWN),
+
+    KEYDATA(END),
+    KEYDATA(HOME),
+    KEYDATA(INSERT),
+    KEYDATA(DELETE),
+
+    KEYDATA(KP_DECIMAL),
+    KEYDATA(KP_DIVIDE),
+    KEYDATA(KP_MULTIPLY),
+    KEYDATA(KP_SUBTRACT),
+    KEYDATA(KP_ADD),
+    KEYDATA(KP_ENTER),
+    KEYDATA(KP_EQUAL),
+
+    KEYDATA(LEFT),
+    KEYDATA(RIGHT),
+    KEYDATA(UP),
+    KEYDATA(DOWN),
+
+    KEYDATA(KP_0),
+    KEYDATA(KP_1),
+    KEYDATA(KP_2),
+    KEYDATA(KP_3),
+    KEYDATA(KP_4),
+    KEYDATA(KP_5),
+    KEYDATA(KP_6),
+    KEYDATA(KP_7),
+    KEYDATA(KP_8),
+    KEYDATA(KP_9),
+
+    KEYDATA(F1),
+    KEYDATA(F2),
+    KEYDATA(F3),
+    KEYDATA(F4),
+    KEYDATA(F5),
+    KEYDATA(F6),
+    KEYDATA(F7),
+    KEYDATA(F8),
+    KEYDATA(F9),
+    KEYDATA(F10),
+    KEYDATA(F11),
+    KEYDATA(F12),
 };
+#undef KEYDATA
 
 #endif

@@ -1,7 +1,7 @@
 #include <engine/components/physics.h>
 
 void
-Physics::evalResForce()
+herb::Physics::evalResForce()
 {
     resForce = {0, 0};
     for (const auto& force : forces)
@@ -12,10 +12,10 @@ Physics::evalResForce()
 
 
 void
-physics(GameState *state, Storage *storage, const Entity id)
+herb::physics(herb::GameState *state, herb::Storage *storage, const herb::Entity id)
 {
-    auto p = storage->getComponent<Physics>(id);
-    auto coll = storage->getComponent<Collider>(id);
+    auto p = storage->getComponent<herb::Physics>(id);
+    auto coll = storage->getComponent<herb::Collider>(id);
 
     if (p->allowGravity && coll->normal.y != 1)
     {
@@ -37,7 +37,7 @@ physics(GameState *state, Storage *storage, const Entity id)
     auto resForce = p->resForce / p->mass;
 
     p->speed += resForce * state->deltaTime;
-    auto t = storage->getComponent<Transform>(id);
+    auto t = storage->getComponent<herb::Transform>(id);
 
     if (p->activeAxes.x == 1)
     {
@@ -52,15 +52,15 @@ physics(GameState *state, Storage *storage, const Entity id)
 }
 
 void
-pushOut(GameState *state, Storage *storage, const Entity id)
+herb::pushOut(herb::GameState *state, herb::Storage *storage, const herb::Entity id)
 {
-    auto coll = storage->getComponent<Collider>(id);
-    auto p = storage->getComponent<Physics>(id);
+    auto coll = storage->getComponent<herb::Collider>(id);
+    auto p = storage->getComponent<herb::Physics>(id);
     if (coll != nullptr && !coll->collisionList.empty() && !coll->allowCollision)
     {
 
-        auto t = storage->getComponent<Transform>(id);
-        sf::Vector2f move = coll->normal * coll->penetration;
+        auto t = storage->getComponent<herb::Transform>(id);
+        glm::vec2 move = coll->normal * coll->penetration;
         move.x *= p->activeAxes.x;
         move.y *= p->activeAxes.y;
         t->position += move;
@@ -68,28 +68,28 @@ pushOut(GameState *state, Storage *storage, const Entity id)
 }
 
 void
-collision (GameState *state, Storage *storage, const Entity id)
+herb::collision(herb::GameState *state, herb::Storage *storage, const herb::Entity id)
 {
-    auto c = storage->getComponent<Collider>(id);
-    auto t = storage->getComponent<Transform>(id);
+    auto c = storage->getComponent<herb::Collider>(id);
+    auto t = storage->getComponent<herb::Transform>(id);
     auto tPos = t->position;
     auto dC = c->deltaCenter;
     float w = c->width * 0.5f;
     float h = c->height * 0.5f;
 
-    for (Entity id2 : storage->usedIds)
+    for (herb::Entity id2 : storage->usedIds)
     {
         // NOTE(Roma): Берётся коллайдер другого объекта, и если он есть и этот объект не совпадает с текущим.
-        auto c2 = storage->getComponent<Collider>(id2);
+        auto c2 = storage->getComponent<herb::Collider>(id2);
         if (c2 != nullptr && id2 != id)
         {
-            auto t2 = storage->getComponent<Transform>(id2);
+            auto t2 = storage->getComponent<herb::Transform>(id2);
             auto tPos2 = t2->position;
             auto dC2 = c2->deltaCenter;
             float w2 = c2->width * 0.5f;
             float h2 = c2->height * 0.5f;
 
-            sf::Vector2f betweenCenters = {tPos.x + dC.x - tPos2.x - dC2.x, tPos.y + dC.y - tPos2.y - dC2.y};
+            glm::vec2 betweenCenters = {tPos.x + dC.x - tPos2.x - dC2.x, tPos.y + dC.y - tPos2.y - dC2.y};
             // Степень наложения одного коллайдера на другой по оси Х.
             float overlapX = w + w2 - (float) fabs(betweenCenters.x);
 

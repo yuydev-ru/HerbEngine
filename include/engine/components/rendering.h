@@ -1,31 +1,31 @@
 #ifndef ENGINE_RENDERING_H
 #define ENGINE_RENDERING_H
 
+#include <glm/vec2.hpp>
+
+#include <raylib.h>
+
 #include "../base.h"
 #include "../parser.h"
-#include <SFML/Graphics.hpp>
+
+namespace herb {
 
 struct Sprite : Component
 {
     std::string assetPath;
-    sf::Image image;
-    sf::Texture texture;
-    sf::Sprite sprite;
+    Image originalImage;
+    Image image;
+    Texture texture;
 
     static Component *
-    deserialize(Parser &parser)
+    deserialize(herb::Parser &parser)
     {
         auto spr = new Sprite;
 
         spr->assetPath = parser.parseElement<std::string>("assetPath");
-
-        spr->image.loadFromFile(spr->assetPath);
-        spr->texture.loadFromImage(spr->image);
-        spr->sprite.setTexture(spr->texture);
-        sf::IntRect rect = { 0, 0
-                , (int) spr->image.getSize().x
-                , (int) spr->image.getSize().y };
-        spr->sprite.setTextureRect(rect);
+        spr->originalImage = LoadImage(spr->assetPath.c_str());
+        spr->image = ImageCopy(spr->originalImage);
+        spr->texture = LoadTextureFromImage(spr->image);
 
         return spr;
     }
@@ -33,19 +33,21 @@ struct Sprite : Component
 
 struct Camera : Component
 {
-    sf::Vector2f scale = {1, 1};
+    glm::vec2 scale = {1, 1};
 
     static Component *
-    deserialize(Parser &parser)
+    deserialize(herb::Parser &parser)
     {
         auto c = new Camera;
-        c->scale = parser.parseVector2<float>("scale");
+        c->scale = parser.parseVector2("scale");
 
         return c;
     }
 };
 
 void
-render(GameState *, Storage *, const Entity);
+render(herb::GameState *, herb::Storage *, const herb::Entity);
+
+} // namespace herb
 
 #endif
