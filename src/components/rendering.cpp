@@ -1,5 +1,5 @@
-#include "rendering.h"
-#include "transform.h"
+#include <engine/components/rendering.h>
+#include <engine/components/transform.h>
 
 void
 render(GameState *state, Storage *storage, const Entity id)

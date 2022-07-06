@@ -1,4 +1,4 @@
-#include "sound.h"
+#include <engine/components/sound.h>
 
 void
 Sound::play()

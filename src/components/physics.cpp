@@ -1,4 +1,4 @@
-#include "physics.h"
+#include <engine/components/physics.h>
 
 void
 Physics::evalResForce()

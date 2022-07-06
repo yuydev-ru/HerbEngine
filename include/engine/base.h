@@ -2,7 +2,7 @@
 #define ENGINE_BASE_H
 
 #include <SFML/Graphics.hpp>
-#include <logger/logger.h>
+#include <logger/logger.hpp>
 
 #include "parser.h"
 #include "inputdata.h"
