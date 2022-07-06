@@ -20,18 +20,25 @@ herb::render(herb::GameState *state, herb::Storage *storage, const herb::Entity 
     } * 0.5f;
 
     auto spriteSize = glm::vec2 {
-        spr->texture.width,
-        spr->texture.height,
+        spr->originalImage.width,
+        spr->originalImage.height,
     };
     spriteSize.x *= t->scale.x * camera->scale.x;
     spriteSize.y *= t->scale.y * camera->scale.y;
     screenPos -= spriteSize * 0.5f;
 
-    auto screenScale = t->scale;
-    screenScale.x *= camera->scale.x;
-    screenScale.y *= camera->scale.y;
+    // NOTE(andrew): Осталось после SFML
+    // auto screenScale = t->scale;
+    // screenScale.x *= camera->scale.x;
+    // screenScale.y *= camera->scale.y;
 
-    // TODO(andrew): Добавить использование screenScale
-    // spr->sprite.setScale(screenScale);
+    if (spriteSize.x != spr->texture.width
+        || spriteSize.y != spr->texture.height)
+    {
+        UnloadTexture(spr->texture);
+        Image image = ImageCopy(spr->originalImage);
+        ImageResize(&image, spriteSize.x, spriteSize.y);
+        spr->texture = LoadTextureFromImage(image);
+    }
     DrawTexture(spr->texture, screenPos.x, screenPos.y, WHITE);
 }

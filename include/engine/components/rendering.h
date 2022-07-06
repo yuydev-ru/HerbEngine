@@ -13,6 +13,8 @@ namespace herb {
 struct Sprite : Component
 {
     std::string assetPath;
+    Image originalImage;
+    Image image;
     Texture texture;
 
     static Component *
@@ -21,8 +23,9 @@ struct Sprite : Component
         auto spr = new Sprite;
 
         spr->assetPath = parser.parseElement<std::string>("assetPath");
-        // TODO(andrew): Убрать c_str
-        spr->texture = LoadTexture(spr->assetPath.c_str());
+        spr->originalImage = LoadImage(spr->assetPath.c_str());
+        spr->image = ImageCopy(spr->originalImage);
+        spr->texture = LoadTextureFromImage(spr->image);
 
         return spr;
     }

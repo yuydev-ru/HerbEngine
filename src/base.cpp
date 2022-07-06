@@ -148,8 +148,11 @@ main(int argc, char *argv[])
     herb::Config config;
     loadConfig(&state, "assets/config.json", &config);
 
-    // TODO(andrew): Убрать c_str
-    InitWindow(config.windowWidth, config.windowHeight, config.windowTitle.c_str());
+    InitWindow(
+        config.windowWidth,
+        config.windowHeight,
+        config.windowTitle.c_str()
+    );
 
     state.running = true;
     // NOTE(andrew): Осталось после SFML
