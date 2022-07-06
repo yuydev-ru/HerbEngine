@@ -2,21 +2,27 @@
 #include <engine/components/transform.h>
 
 void
-render(GameState *state, Storage *storage, const Entity id)
+herb::render(herb::GameState *state, herb::Storage *storage, const herb::Entity id)
 {
-    auto camera = storage->getComponent<Camera>(state->currentCamera);
-    auto camTransform = storage->getComponent<Transform>(state->currentCamera);
+    auto camera = storage->getComponent<herb::Camera>(state->currentCamera);
+    auto camTransform = storage->getComponent<herb::Transform>(state->currentCamera);
     auto camPos = camTransform->position;
 
-    auto t = storage->getComponent<Transform>(id);
-    auto spr = storage->getComponent<Sprite>(id);
+    auto t = storage->getComponent<herb::Transform>(id);
+    auto spr = storage->getComponent<herb::Sprite>(id);
 
-    sf::Vector2f screenPos = { (t->position.x - camPos.x) * camera->scale.x
+    glm::vec2 screenPos = { (t->position.x - camPos.x) * camera->scale.x
             , (camPos.y - t->position.y) * camera->scale.y };
 
-    screenPos += (sf::Vector2f) state->window->getSize() * 0.5f;
+    screenPos += glm::vec2 { 
+        state->config->windowWidth,
+        state->config->windowHeight,
+    } * 0.5f;
 
-    auto spriteSize = (sf::Vector2f) spr->texture.getSize();
+    auto spriteSize = glm::vec2 {
+        spr->texture.width,
+        spr->texture.height,
+    };
     spriteSize.x *= t->scale.x * camera->scale.x;
     spriteSize.y *= t->scale.y * camera->scale.y;
     screenPos -= spriteSize * 0.5f;
@@ -25,7 +31,7 @@ render(GameState *state, Storage *storage, const Entity id)
     screenScale.x *= camera->scale.x;
     screenScale.y *= camera->scale.y;
 
-    spr->sprite.setPosition(screenPos);
-    spr->sprite.setScale(screenScale);
-    state->window->draw(spr->sprite);
+    // TODO(andrew): Добавить использование screenScale
+    // spr->sprite.setScale(screenScale);
+    DrawTexture(spr->texture, screenPos.x, screenPos.y, WHITE);
 }

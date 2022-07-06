@@ -2,4 +2,4 @@
 #include "base.h"
 
 void
-initializeEngine(GameState *, Storage *);
+initializeEngine(herb::GameState *, herb::Storage *);

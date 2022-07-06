@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+#include <raylib.h>
 
 #include <unordered_map>
 #include <iostream>
@@ -9,12 +9,12 @@
 #include <engine/interface.h>
 #include <engine/components.h>
 
-void initializeEngine(GameState*, Storage*);
+void initializeEngine(herb::GameState*, herb::Storage*);
 
 void
-loadConfig(GameState *state, const std::string& configPath, Config *config)
+loadConfig(herb::GameState *state, const std::string& configPath, herb::Config *config)
 {
-    Parser file(configPath);
+    herb::Parser file(configPath);
     inputData inputArray;
 
     config->windowWidth = file.parseElement<int>("window", "width");
@@ -23,7 +23,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
 
     config->defaultScene = file.parseElement<std::string>("scene", "default");
 
-    Parser opKeys(configPath,{"input", "oppositeKeys"});
+    herb::Parser opKeys(configPath,{"input", "oppositeKeys"});
     for (int i = 0; i < (int) opKeys.size(); ++i)
     {
         std::string key1 = opKeys.parseObjectElement<std::string>(i, 0);
@@ -31,7 +31,7 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
         config->oppositeKeys.insert(make_pair(key1,key2));
     }
 
-    Parser mainKeys(configPath,{"input", "keys"});
+    herb::Parser mainKeys(configPath,{"input", "keys"});
     for (int i = 0; i < (int) mainKeys.size(); ++i)
     {
         std::string key = mainKeys.parseObjectElement<std::string>(i,0);
@@ -39,21 +39,21 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
         config->keys.insert(make_pair(key,inputArray.stringToKeyboardKey(value)));
     }
 
-    Parser axisKeys(configPath,{"input", "axisData"});
+    herb::Parser axisKeys(configPath,{"input", "axisData"});
     for (int i = 0; i < (int) axisKeys.size(); ++i)
     {
-       KeyData data;
+        herb::KeyData data;
 
-       std::string key_tmp = axisKeys.parseObjectElement<std::string>(i, "key");
+        std::string key_tmp = axisKeys.parseObjectElement<std::string>(i, "key");
 
-       data.axis = axisKeys.parseObjectElement<std::string>(i, "axis");
-       data.axisType = axisKeys.parseObjectElement<std::string>(i, "axisType");
-       data.value = axisKeys.parseObjectElement<float>(i, "value");
+        data.axis = axisKeys.parseObjectElement<std::string>(i, "axis");
+        data.axisType = axisKeys.parseObjectElement<std::string>(i, "axisType");
+        data.value = axisKeys.parseObjectElement<float>(i, "value");
 
-       config->axisData.insert(std::make_pair(config->keys[key_tmp],data));
+        config->axisData.insert(std::make_pair(config->keys[key_tmp],data));
     }
 
-    Parser axes(configPath,{"input","axes"});
+    herb::Parser axes(configPath,{"input","axes"});
     for (int i = 0; i < (int) axes.size(); ++i)
     {
         std::string axis = axes.parseObjectElement<std::string>(i, 0);
@@ -64,17 +64,17 @@ loadConfig(GameState *state, const std::string& configPath, Config *config)
     config->logLevel = static_cast<logger::LogLevel>(file.parseElement<int>("debug", "logLevel"));
 }
 
-Entity
-loadEntity(Parser &components, GameState *state, Storage *storage)
+herb::Entity
+loadEntity(herb::Parser &components, herb::GameState *state, herb::Storage *storage)
 {
-    Entity entity = storage->createEntity();
+    herb::Entity entity = storage->createEntity();
     for (components.iterator = components.data.begin(); components.iterator  != components.data.end(); ++components.iterator)
     {
-        Parser component(*components.iterator);
+        herb::Parser component(*components.iterator);
         std::string name = component.parseElement<std::string>("type");
         if (storage->deserializers.find(name) != storage->deserializers.end())
         {
-            Component *comp = storage->deserializers[name](component);
+            herb::Component *comp = storage->deserializers[name](component);
             auto type = storage->typeNames.at(name);
             storage->entities[type][entity] = comp;
             storage->entitySignatures[entity].set(storage->componentTypes[type]);
@@ -90,22 +90,22 @@ loadEntity(Parser &components, GameState *state, Storage *storage)
 }
 
 void
-loadScene(const Config *config, const std::string& sceneName, GameState *state, Storage *storage)
+loadScene(const herb::Config *config, const std::string& sceneName, herb::GameState *state, herb::Storage *storage)
 {
-    Parser file(sceneName,{"entities"});
+    herb::Parser file(sceneName,{"entities"});
 
     for (file.iterator = file.data.begin(); file.iterator  != file.data.end(); ++file.iterator)
     {
-        Parser parser(*file.iterator);
+        herb::Parser parser(*file.iterator);
         loadEntity(parser, state, storage);
     }
 }
 
 void
-call(GameState *state, Storage *storage, const System f, const Entity id)
+call(herb::GameState *state, herb::Storage *storage, const herb::System f, const herb::Entity id)
 {
-    Signature entSig = storage->entitySignatures[id];
-    Signature sysSig = storage->systemSignature[f];
+    herb::Signature entSig = storage->entitySignatures[id];
+    herb::Signature sysSig = storage->systemSignature[f];
     if ((entSig & sysSig) == sysSig)
     {
         f(state, storage, id);
@@ -113,11 +113,11 @@ call(GameState *state, Storage *storage, const System f, const Entity id)
 }
 
 void
-updateState(GameState *state, Storage *storage)
+updateState(herb::GameState *state, herb::Storage *storage)
 {
-    for (Entity id : storage->usedIds)
+    for (herb::Entity id : storage->usedIds)
     {
-        for (System system : storage->systemsArray)
+        for (herb::System system : storage->systemsArray)
         {
             call(state, storage, system, id);
         }
@@ -125,36 +125,37 @@ updateState(GameState *state, Storage *storage)
 }
 
 void
-internalRegisterComponents(GameState *state, Storage *storage)
+internalRegisterComponents(herb::GameState *state, herb::Storage *storage)
 {
-    storage->registerComponent<Transform>("Transform");
-    storage->registerComponent<Sprite>("Sprite");
-    storage->registerComponent<Camera>("Camera");
-    storage->registerComponent<Collider>("Collider");
-    storage->registerComponent<Physics>("Physics");
-    storage->registerComponent<Sound>("Sound");
+    storage->registerComponent<herb::Transform>("Transform");
+    storage->registerComponent<herb::Sprite>("Sprite");
+    storage->registerComponent<herb::Camera>("Camera");
+    storage->registerComponent<herb::Collider>("Collider");
+    storage->registerComponent<herb::Physics>("Physics");
+    storage->registerComponent<herb::Sound>("Sound");
 
-    storage->registerSystem(setupSound,{TYPE(Sound)});
-    storage->registerSystem(render, {TYPE(Transform), TYPE(Sprite)});
-    storage->registerSystem(collision, {TYPE(Collider), TYPE(Transform)});
-    storage->registerSystem(pushOut, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
-    storage->registerSystem(physics, {TYPE(Collider), TYPE(Physics), TYPE(Transform)});
+    storage->registerSystem(herb::setupSound, {TYPE(herb::Sound)});
+    storage->registerSystem(herb::render, {TYPE(herb::Transform), TYPE(herb::Sprite)});
+    storage->registerSystem(herb::collision, {TYPE(herb::Collider), TYPE(herb::Transform)});
+    storage->registerSystem(herb::pushOut, {TYPE(herb::Collider), TYPE(herb::Physics), TYPE(herb::Transform)});
+    storage->registerSystem(herb::physics, {TYPE(herb::Collider), TYPE(herb::Physics), TYPE(herb::Transform)});
 }
 
 int
 main(int argc, char *argv[])
 {
-    GameState state {};
-    Config config;
+    herb::GameState state {};
+    herb::Config config;
     loadConfig(&state, "assets/config.json", &config);
 
-    sf::RenderWindow window(sf::VideoMode(config.windowWidth, config.windowHeight), config.windowTitle);
-
+    // TODO(andrew): Убрать c_str
+    InitWindow(config.windowWidth, config.windowHeight, config.windowTitle.c_str());
 
     state.running = true;
-    state.window = &window;
+    // NOTE(andrew): Осталось после SFML
+    // state.window = &window;
 
-    Storage storage;
+    herb::Storage storage;
 
     logger::Logger logger(config.logLevel);
     logger::ConsoleLogger consoleLogger;
@@ -162,16 +163,17 @@ main(int argc, char *argv[])
 
     storage.logger = &logger;
     state.logger = &logger;
+    state.config = &config;
 
     internalRegisterComponents(&state, &storage);
     initializeEngine(&state, &storage);
     loadScene(&config, config.defaultScene, &state, &storage);
 
-    sf::Clock clock;
     state.deltaTime = 0;
 
     while (state.running)
     {
+#if 0
         sf::Event event {};
 
         while (window.pollEvent(event))
@@ -191,7 +193,7 @@ main(int argc, char *argv[])
 
             if (event.type == sf::Event::KeyPressed && config.axisData.count(event.key.code))
             {
-                KeyData pressedKeyData = config.axisData[event.key.code];
+                herb::KeyData pressedKeyData = config.axisData[event.key.code];
                 if (pressedKeyData.axisType == "push")
                 {
                     if (state.pushedKeys[event.key.code])
@@ -221,8 +223,8 @@ main(int argc, char *argv[])
                     }
                 }
 
-                KeyData pressedKeyData = config.axisData[event.key.code];
-                KeyData oppositeKeyData = config.axisData[oppositeKey];
+                herb::KeyData pressedKeyData = config.axisData[event.key.code];
+                herb::KeyData oppositeKeyData = config.axisData[oppositeKey];
 
                 if (pressedKeyData.axisType == "push")
                 {
@@ -236,11 +238,13 @@ main(int argc, char *argv[])
                 }
             }
         }
+#endif
 
-        window.clear();
+        BeginDrawing();
+        ClearBackground(BLACK);
         updateState(&state, &storage);
-        window.display();
-        state.deltaTime = clock.restart().asSeconds();
+        EndDrawing();
+        state.deltaTime = GetFrameTime();
     }
 
     return 0;

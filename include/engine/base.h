@@ -1,7 +1,8 @@
 #ifndef ENGINE_BASE_H
 #define ENGINE_BASE_H
 
-#include <SFML/Graphics.hpp>
+#include <raylib.h>
+
 #include <logger/logger.hpp>
 
 #include "parser.h"
@@ -21,13 +22,16 @@
 #define TYPE(x) std::type_index(typeid(x))
 #define MAX_COMPONENTS 32
 
+namespace herb {
+
 struct Storage;
 struct GameState;
 struct Component {};
 
 typedef unsigned int Entity;
-typedef void (*System)(GameState *, Storage *, Entity);
-typedef Component *(*Deserializer)(Parser&);
+
+typedef void (*System)(herb::GameState *, herb::Storage *, herb::Entity);
+typedef herb::Component *(*Deserializer)(herb::Parser&);
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
 struct KeyData
@@ -53,20 +57,22 @@ struct Config
     std::string windowTitle;
     std::string defaultScene;
     std::unordered_map<std::string, std::string> oppositeKeys;
-    std::unordered_map<std::string, sf::Keyboard::Key> keys;
-    std::map<sf::Keyboard::Key, KeyData> axisData;
+    std::unordered_map<std::string, KeyboardKey> keys;
+    std::map<KeyboardKey, KeyData> axisData;
     logger::LogLevel logLevel;
 };
 
 struct GameState
 {
     bool running = true;
-    sf::RenderWindow *window;
-    Entity currentCamera;
+    // NOTE(andrew): Осталось после SFML
+    // sf::RenderWindow *window;
+    herb::Entity currentCamera;
     std::unordered_map<std::string, float> axes;
-    std::map<sf::Keyboard::Key, bool> pushedKeys;
+    std::map<KeyboardKey, bool> pushedKeys;
     float deltaTime;
-    logger::Logger* logger;
+    logger::Logger *logger;
+    herb::Config *config;
 };
 
 struct Storage
@@ -74,30 +80,30 @@ struct Storage
 
     std::unordered_map<std::type_index, int> componentTypes;
     std::unordered_map<std::string, std::type_index> typeNames;
-    std::unordered_map<std::string, Deserializer> deserializers;
+    std::unordered_map<std::string, herb::Deserializer> deserializers;
 
-    std::unordered_map<std::type_index, std::vector<Component *>> entities;
-    std::unordered_map<System, Signature> systemSignature;
-    std::vector<System> systemsArray;
-    std::vector<Signature> entitySignatures;
+    std::unordered_map<std::type_index, std::vector<herb::Component *>> entities;
+    std::unordered_map<herb::System, herb::Signature> systemSignature;
+    std::vector<herb::System> systemsArray;
+    std::vector<herb::Signature> entitySignatures;
 
-    Entity lastEntityId = 0;
-    std::queue<Entity> freeIds;
-    std::set<Entity> usedIds;
+    herb::Entity lastEntityId = 0;
+    std::queue<herb::Entity> freeIds;
+    std::set<herb::Entity> usedIds;
     logger::Logger* logger;
     int componentsCount = 0;
 
     void
-    registerSystem(const System& system, const std::vector<std::type_index>& types)
+    registerSystem(const herb::System& system, const std::vector<std::type_index>& types)
     {
         this->systemSignature[system] = this->createSignature(types);
         this->systemsArray.push_back(system);
     }
 
-    Entity
+    herb::Entity
     createEntity()
     {
-        Entity idx;
+        herb::Entity idx;
         if (this->freeIds.empty())
         {
             idx = this->lastEntityId++;
@@ -120,7 +126,7 @@ struct Storage
     }
 
     void
-    destroyEntity(Entity eid)
+    destroyEntity(herb::Entity eid)
     {
         for (auto &componentPair : this->entities)
         {
@@ -134,10 +140,10 @@ struct Storage
         this->freeIds.push(eid);
     }
 
-    Signature
+    herb::Signature
     createSignature(const std::vector<std::type_index>& components)
     {
-        Signature signature;
+        herb::Signature signature;
         for (auto component : components)
         {
             signature.set(this->componentTypes[component]);
@@ -162,12 +168,12 @@ struct Storage
         this->deserializers.insert(std::make_pair(name, T::deserialize));
 
         this->componentTypes[TYPE(T)] = this->componentsCount++;
-        std::vector<Component *> tmp;
+        std::vector<herb::Component *> tmp;
         this->entities.insert(std::make_pair(TYPE(T), tmp));
     }
 
     template <class T> T*
-    addComponent(Entity eid)
+    addComponent(herb::Entity eid)
     {
         std::string componentName = TYPE(T).name();
         std::string entityID = std::to_string(eid);
@@ -195,7 +201,7 @@ struct Storage
     }
 
     template <class T> T*
-    getComponent(Entity eid)
+    getComponent(herb::Entity eid)
     {
         std::string componentName = TYPE(T).name();
         std::string entityID = std::to_string(eid);
@@ -215,5 +221,7 @@ struct Storage
         return (T*) this->entities[TYPE(T)][eid];
     }
 };
+
+} // namespace herb
 
 #endif
