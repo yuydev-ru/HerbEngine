@@ -1,13 +1,15 @@
 #include <SFML/Graphics.hpp>
 
-#include "base.h"
-#include "interface.h"
-#include "components.h"
 #include <unordered_map>
-
-#include "parser.h"
-#include "inputdata.h"
 #include <iostream>
+
+#include <engine/parser.h>
+#include <engine/inputdata.h>
+#include <engine/base.h>
+#include <engine/interface.h>
+#include <engine/components.h>
+
+void initializeEngine(GameState*, Storage*);
 
 void
 loadConfig(GameState *state, const std::string& configPath, Config *config)
@@ -140,7 +142,7 @@ internalRegisterComponents(GameState *state, Storage *storage)
 }
 
 int
-main()
+main(int argc, char *argv[])
 {
     GameState state {};
     Config config;
