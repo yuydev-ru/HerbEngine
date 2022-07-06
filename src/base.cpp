@@ -15,7 +15,6 @@ void
 loadConfig(herb::GameState *state, const std::string& configPath, herb::Config *config)
 {
     herb::Parser file(configPath);
-    inputData inputArray;
 
     config->windowWidth = file.parseElement<int>("window", "width");
     config->windowHeight = file.parseElement<int>("window", "height");
@@ -36,7 +35,7 @@ loadConfig(herb::GameState *state, const std::string& configPath, herb::Config *
     {
         std::string key = mainKeys.parseObjectElement<std::string>(i,0);
         std::string value = mainKeys.parseObjectElement<std::string>(i, 1);
-        config->keys.insert(make_pair(key,inputArray.stringToKeyboardKey(value)));
+        config->keys.insert(make_pair(key, stringToKeyboardKey[value]));
     }
 
     herb::Parser axisKeys(configPath,{"input", "axisData"});
@@ -153,6 +152,7 @@ main(int argc, char *argv[])
         config.windowHeight,
         config.windowTitle.c_str()
     );
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
 
     state.running = true;
     // NOTE(andrew): Осталось после SFML
@@ -176,36 +176,32 @@ main(int argc, char *argv[])
 
     while (state.running)
     {
-#if 0
-        sf::Event event {};
-
-        while (window.pollEvent(event))
+        if (WindowShouldClose())
         {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-                state.running = false;
-            }
+            state.running = false;
+            break;
+        }
 
-            if (event.type == sf::Event::Resized)
-            {
-                sf::Vector2f visibleArea = { (float) event.size.width
-                                           , (float) event.size.height };
-                window.setView(sf::View(visibleArea * 0.5f, visibleArea));
-            }
+        if (IsWindowResized())
+        {
+            config.windowWidth = GetScreenWidth();
+            config.windowHeight = GetScreenHeight();
+        }
 
-            if (event.type == sf::Event::KeyPressed && config.axisData.count(event.key.code))
+        for (const auto &[_, keyCode] : stringToKeyboardKey)
+        {
+            if (IsKeyPressed(keyCode) && config.axisData.count(keyCode))
             {
-                herb::KeyData pressedKeyData = config.axisData[event.key.code];
+                herb::KeyData pressedKeyData = config.axisData[keyCode];
                 if (pressedKeyData.axisType == "push")
                 {
-                    if (state.pushedKeys[event.key.code])
+                    if (state.pushedKeys[keyCode])
                     {
                         state.axes[pressedKeyData.axis] = 0;
                     }
                     else
                     {
-                        state.pushedKeys[event.key.code] = true;
+                        state.pushedKeys[keyCode] = true;
                         state.axes[pressedKeyData.axis] = pressedKeyData.value;
                     }
                 }
@@ -215,33 +211,32 @@ main(int argc, char *argv[])
                 }
             }
 
-            if (event.type == sf::Event::KeyReleased && config.axisData.count(event.key.code))
+            if (IsKeyReleased(keyCode) && config.axisData.count(keyCode))
             {
-                sf::Keyboard::Key oppositeKey;
+                KeyboardKey oppositeKey;
                 for (const auto& it : config.keys)
                 {
-                    if (it.second == event.key.code)
+                    if (it.second == keyCode)
                     {
                         oppositeKey = config.keys[config.oppositeKeys[it.first]];
                     }
                 }
 
-                herb::KeyData pressedKeyData = config.axisData[event.key.code];
+                herb::KeyData pressedKeyData = config.axisData[keyCode];
                 herb::KeyData oppositeKeyData = config.axisData[oppositeKey];
 
                 if (pressedKeyData.axisType == "push")
                 {
-                    state.pushedKeys[event.key.code] = false;
+                    state.pushedKeys[keyCode] = false;
                     state.axes[pressedKeyData.axis] = 0;
                 }
                 else if (pressedKeyData.axisType == "hold")
                 {
                     state.axes[pressedKeyData.axis] =
-                        (sf::Keyboard::isKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
+                        (IsKeyPressed(oppositeKey)) ? oppositeKeyData.value : 0;
                 }
             }
         }
-#endif
 
         BeginDrawing();
         ClearBackground(BLACK);
@@ -249,6 +244,8 @@ main(int argc, char *argv[])
         EndDrawing();
         state.deltaTime = GetFrameTime();
     }
+
+    CloseWindow();
 
     return 0;
 }

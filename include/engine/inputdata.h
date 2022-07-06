@@ -5,134 +5,121 @@
 #include <unordered_map>
 #include <raylib.h>
 
-struct inputData
-{
-    std::unordered_map<std::string, KeyboardKey> data;
+#define KEYDATA(input_key) { #input_key, KEY_##input_key }
+static std::unordered_map<std::string, KeyboardKey> stringToKeyboardKey = {
+    KEYDATA(NULL),
+    KEYDATA(A),
+    KEYDATA(B),
+    KEYDATA(C),
+    KEYDATA(D),
+    KEYDATA(E),
+    KEYDATA(F),
+    KEYDATA(G),
+    KEYDATA(H),
+    KEYDATA(I),
+    KEYDATA(J),
+    KEYDATA(K),
+    KEYDATA(L),
+    KEYDATA(M),
+    KEYDATA(N),
+    KEYDATA(O),
+    KEYDATA(P),
+    KEYDATA(Q),
+    KEYDATA(R),
+    KEYDATA(S),
+    KEYDATA(T),
+    KEYDATA(U),
+    KEYDATA(V),
+    KEYDATA(W),
+    KEYDATA(X),
+    KEYDATA(Y),
+    KEYDATA(Z),
 
-#define INSERT_KEYDATA(input_key) this->data.insert(std::make_pair(#input_key, KEY_##input_key));
-    inputData()
-    {
-        // Keyboard
-        INSERT_KEYDATA(NULL);
-        INSERT_KEYDATA(A);
-        INSERT_KEYDATA(B);
-        INSERT_KEYDATA(C);
-        INSERT_KEYDATA(D);
-        INSERT_KEYDATA(E);
-        INSERT_KEYDATA(F);
-        INSERT_KEYDATA(G);
-        INSERT_KEYDATA(H);
-        INSERT_KEYDATA(I);
-        INSERT_KEYDATA(J);
-        INSERT_KEYDATA(K);
-        INSERT_KEYDATA(L);
-        INSERT_KEYDATA(M);
-        INSERT_KEYDATA(N);
-        INSERT_KEYDATA(O);
-        INSERT_KEYDATA(P);
-        INSERT_KEYDATA(Q);
-        INSERT_KEYDATA(R);
-        INSERT_KEYDATA(S);
-        INSERT_KEYDATA(T);
-        INSERT_KEYDATA(U);
-        INSERT_KEYDATA(V);
-        INSERT_KEYDATA(W);
-        INSERT_KEYDATA(X);
-        INSERT_KEYDATA(Y);
-        INSERT_KEYDATA(Z);
+    KEYDATA(ZERO),
+    KEYDATA(ONE),
+    KEYDATA(TWO),
+    KEYDATA(THREE),
+    KEYDATA(FOUR),
+    KEYDATA(FIVE),
+    KEYDATA(SIX),
+    KEYDATA(SEVEN),
+    KEYDATA(EIGHT),
+    KEYDATA(NINE),
 
-        INSERT_KEYDATA(ZERO);
-        INSERT_KEYDATA(ONE);
-        INSERT_KEYDATA(TWO);
-        INSERT_KEYDATA(THREE);
-        INSERT_KEYDATA(FOUR);
-        INSERT_KEYDATA(FIVE);
-        INSERT_KEYDATA(SIX);
-        INSERT_KEYDATA(SEVEN);
-        INSERT_KEYDATA(EIGHT);
-        INSERT_KEYDATA(NINE);
+    KEYDATA(PAUSE),
+    KEYDATA(ESCAPE),
 
-        INSERT_KEYDATA(PAUSE);
-        INSERT_KEYDATA(ESCAPE);
+    KEYDATA(LEFT_CONTROL),
+    KEYDATA(LEFT_SHIFT),
+    KEYDATA(LEFT_ALT),
+    KEYDATA(LEFT_SUPER),
 
-        INSERT_KEYDATA(LEFT_CONTROL);
-        INSERT_KEYDATA(LEFT_SHIFT);
-        INSERT_KEYDATA(LEFT_ALT);
-        INSERT_KEYDATA(LEFT_SUPER);
+    KEYDATA(RIGHT_CONTROL),
+    KEYDATA(RIGHT_SHIFT),
+    KEYDATA(RIGHT_ALT),
+    KEYDATA(RIGHT_SUPER),
 
-        INSERT_KEYDATA(RIGHT_CONTROL);
-        INSERT_KEYDATA(RIGHT_SHIFT);
-        INSERT_KEYDATA(RIGHT_ALT);
-        INSERT_KEYDATA(RIGHT_SUPER);
+    KEYDATA(KB_MENU),
 
-        INSERT_KEYDATA(KB_MENU);
+    KEYDATA(LEFT_BRACKET),
+    KEYDATA(RIGHT_BRACKET),
+    KEYDATA(SEMICOLON),
+    KEYDATA(COMMA),
+    KEYDATA(PERIOD),
+    KEYDATA(APOSTROPHE),
+    KEYDATA(SLASH),
+    KEYDATA(BACKSLASH),
 
-        INSERT_KEYDATA(LEFT_BRACKET);
-        INSERT_KEYDATA(RIGHT_BRACKET);
-        INSERT_KEYDATA(SEMICOLON);
-        INSERT_KEYDATA(COMMA);
-        INSERT_KEYDATA(PERIOD);
-        INSERT_KEYDATA(APOSTROPHE);
-        INSERT_KEYDATA(SLASH);
-        INSERT_KEYDATA(BACKSLASH);
+    KEYDATA(MINUS),
 
-        INSERT_KEYDATA(MINUS);
+    KEYDATA(SPACE),
+    KEYDATA(BACKSPACE),
+    KEYDATA(TAB),
+    KEYDATA(PAGE_UP),
+    KEYDATA(PAGE_DOWN),
 
-        INSERT_KEYDATA(SPACE);
-        INSERT_KEYDATA(BACKSPACE);
-        INSERT_KEYDATA(TAB);
-        INSERT_KEYDATA(PAGE_UP);
-        INSERT_KEYDATA(PAGE_DOWN);
+    KEYDATA(END),
+    KEYDATA(HOME),
+    KEYDATA(INSERT),
+    KEYDATA(DELETE),
 
-        INSERT_KEYDATA(END);
-        INSERT_KEYDATA(HOME);
-        INSERT_KEYDATA(INSERT);
-        INSERT_KEYDATA(DELETE);
+    KEYDATA(KP_DECIMAL),
+    KEYDATA(KP_DIVIDE),
+    KEYDATA(KP_MULTIPLY),
+    KEYDATA(KP_SUBTRACT),
+    KEYDATA(KP_ADD),
+    KEYDATA(KP_ENTER),
+    KEYDATA(KP_EQUAL),
 
-        INSERT_KEYDATA(KP_DECIMAL);
-        INSERT_KEYDATA(KP_DIVIDE);
-        INSERT_KEYDATA(KP_MULTIPLY);
-        INSERT_KEYDATA(KP_SUBTRACT);
-        INSERT_KEYDATA(KP_ADD);
-        INSERT_KEYDATA(KP_ENTER);
-        INSERT_KEYDATA(KP_EQUAL);
+    KEYDATA(LEFT),
+    KEYDATA(RIGHT),
+    KEYDATA(UP),
+    KEYDATA(DOWN),
 
-        INSERT_KEYDATA(LEFT);
-        INSERT_KEYDATA(RIGHT);
-        INSERT_KEYDATA(UP);
-        INSERT_KEYDATA(DOWN);
+    KEYDATA(KP_0),
+    KEYDATA(KP_1),
+    KEYDATA(KP_2),
+    KEYDATA(KP_3),
+    KEYDATA(KP_4),
+    KEYDATA(KP_5),
+    KEYDATA(KP_6),
+    KEYDATA(KP_7),
+    KEYDATA(KP_8),
+    KEYDATA(KP_9),
 
-        INSERT_KEYDATA(KP_0);
-        INSERT_KEYDATA(KP_1);
-        INSERT_KEYDATA(KP_2);
-        INSERT_KEYDATA(KP_3);
-        INSERT_KEYDATA(KP_4);
-        INSERT_KEYDATA(KP_5);
-        INSERT_KEYDATA(KP_6);
-        INSERT_KEYDATA(KP_7);
-        INSERT_KEYDATA(KP_8);
-        INSERT_KEYDATA(KP_9);
-
-        INSERT_KEYDATA(F1);
-        INSERT_KEYDATA(F2);
-        INSERT_KEYDATA(F3);
-        INSERT_KEYDATA(F4);
-        INSERT_KEYDATA(F5);
-        INSERT_KEYDATA(F6);
-        INSERT_KEYDATA(F7);
-        INSERT_KEYDATA(F8);
-        INSERT_KEYDATA(F9);
-        INSERT_KEYDATA(F10);
-        INSERT_KEYDATA(F11);
-        INSERT_KEYDATA(F12);
-    }
-#undef INSERT_KEYDATA
-
-    KeyboardKey
-    stringToKeyboardKey(const std::string &key)
-    {
-        return this->data[key];
-    }
+    KEYDATA(F1),
+    KEYDATA(F2),
+    KEYDATA(F3),
+    KEYDATA(F4),
+    KEYDATA(F5),
+    KEYDATA(F6),
+    KEYDATA(F7),
+    KEYDATA(F8),
+    KEYDATA(F9),
+    KEYDATA(F10),
+    KEYDATA(F11),
+    KEYDATA(F12),
 };
+#undef KEYDATA
 
 #endif
